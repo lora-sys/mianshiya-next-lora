@@ -1,5 +1,5 @@
 ﻿# 一.核心开发流程
-![核心开发流程](images/Pasted image 20251016195150.png)
+![核心开发流程](images/core_dev_process_20251016195150.png)
 
 
 # 二.项目功能梳理
@@ -55,7 +55,7 @@
 - [ ] nacos 配置中心
 - [ ] 多角度项目优化： 性能，安全性，可用性
 # 四.核心架构图
-![核心架构图](images/Pasted image 20251016203000.png)
+![核心架构图](images/core_architecture_20251016203000.png)
 
 # 五.环境准备
 ## jdk 版本要求8，11，17

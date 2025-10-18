@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="15bcbe5a-2f9a-4739-92d7-1db37a882afb" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/QuestionBankController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/QuestionBank_questionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/QuestionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/generate/CodeGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/QuestionBankMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/QuestionBankQuestionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/QuestionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/question/QuestionAddRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/question/QuestionEditRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/question/QuestionQueryRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/question/QuestionUpdateRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank/QuestionBankAddRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank/QuestionBankEditRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank/QuestionBankQueryRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank/QuestionBankUpdateRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank_question/QuestionBank_questionAddRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank_question/QuestionBank_questionEditRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank_question/QuestionBank_questionQueryRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/questionBank_question/QuestionBank_questionUpdateRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/QuestionBankVO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/QuestionVO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/QuestionBankService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/QuestionBank_questionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/QuestionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/QuestionBank_questionServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/QuestionServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/generator/mapper/QuestionBankMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/generator/mapper/QuestionBankQuestionMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/generator/mapper/QuestionMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/generator/mapper/UserMapper.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/TemplateController.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/TemplateService.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/TemplateServiceImpl.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/model/TemplateAddRequest.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/model/TemplateEditRequest.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/model/TemplateQueryRequest.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/model/TemplateUpdateRequest.java.ftl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/templates/model/TemplateVO.java.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/sql/create_table.sql" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/sql/create_table.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/sql/post_es_mapping.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/sql/post_es_mapping.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/MainApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/MainApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/annotation/AuthCheck.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/annotation/AuthCheck.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/aop/AuthInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/aop/AuthInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/aop/LogInterceptor.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/aop/LogInterceptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/BaseResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/BaseResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/DeleteRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/DeleteRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/ErrorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/ErrorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/PageRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/PageRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/ResultUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/common/ResultUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/CosClientConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/CosClientConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/JsonConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/JsonConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/Knife4jConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/Knife4jConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/MyBatisPlusConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/MyBatisPlusConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/WxOpenConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/config/WxOpenConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/CommonConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/CommonConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/FileConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/FileConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/UserConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/constant/UserConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/FileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/FileController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostFavourController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostFavourController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostThumbController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/PostThumbController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/WxMpController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/controller/WxMpController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/esdao/PostEsDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/esdao/PostEsDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/BusinessException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/BusinessException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/ThrowUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/exception/ThrowUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/job/cycle/IncSyncPostToEs.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/job/cycle/IncSyncPostToEs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/job/once/FullSyncPostToEs.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/job/once/FullSyncPostToEs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/manager/CosManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/manager/CosManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostFavourMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostFavourMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostThumbMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/PostThumbMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/file/UploadFileRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/file/UploadFileRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostAddRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostAddRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostEditRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostEditRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostEsDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostEsDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostQueryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostQueryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/post/PostUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postfavour/PostFavourAddRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postfavour/PostFavourAddRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postfavour/PostFavourQueryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postfavour/PostFavourQueryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postthumb/PostThumbAddRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/postthumb/PostThumbAddRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserAddRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserAddRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserLoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserLoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserQueryRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserQueryRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserRegisterRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserRegisterRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserUpdateMyRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserUpdateMyRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserUpdateRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/dto/user/UserUpdateRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/enums/FileUploadBizEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/enums/FileUploadBizEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/enums/UserRoleEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/enums/UserRoleEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/LoginUserVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/LoginUserVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/PostVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/PostVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/UserVO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/model/vo/UserVO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostFavourService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostFavourService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostThumbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/PostThumbService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostFavourServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostFavourServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostThumbServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/PostThumbServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/NetUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/NetUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/SpringContextUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/SpringContextUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/SqlUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/utils/SqlUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/WxMpConstant.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/WxMpConstant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/WxMpMsgRouter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/WxMpMsgRouter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/EventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/EventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/MessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/MessageHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/SubscribeHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/java/com/lora/mianshihou/wxmp/handler/SubscribeHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/META-INF/additional-spring-configuration-metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/META-INF/additional-spring-configuration-metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application-test.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/banner.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/banner.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostFavourMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostFavourMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostThumbMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/PostThumbMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/UserMapper.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/main/resources/mapper/UserMapper.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/MainApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/MainApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/esdao/PostEsDaoTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/esdao/PostEsDaoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/manager/CosManagerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/manager/CosManagerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/mapper/PostFavourMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/mapper/PostFavourMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/mapper/PostMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/mapper/PostMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostFavourServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostFavourServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostThumbServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/PostThumbServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/UserServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/service/UserServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/utils/EasyExcelTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../mianshihou-backend/src/test/java/com/yupi/springbootinit/utils/EasyExcelTest.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="34EK1I8uomaS7mquXGV48BHWrvb" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="springboot-init-master-master" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="springboot-init-master-master" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration name="MainApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="springboot-init" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.yupi.springbootinit.MainApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="15bcbe5a-2f9a-4739-92d7-1db37a882afb" name="更改" comment="" />
+      <created>1754913221373</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754913221373</updated>
+      <workItem from="1760773077789" duration="96000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

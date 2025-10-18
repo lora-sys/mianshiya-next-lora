@@ -1,6 +1,6 @@
 package com.lora.mianshihou.service;
 
-import generator.domain.QuestionBank;
+import com.lora.mianshihou.model.entity.QuestionBank;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

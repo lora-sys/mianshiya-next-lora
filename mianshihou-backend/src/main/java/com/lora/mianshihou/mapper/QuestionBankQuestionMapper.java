@@ -1,6 +1,6 @@
 package com.lora.mianshihou.mapper;
 
-import generator.domain.QuestionBankQuestion;
+import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

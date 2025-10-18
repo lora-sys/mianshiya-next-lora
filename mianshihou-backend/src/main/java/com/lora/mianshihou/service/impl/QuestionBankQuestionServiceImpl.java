@@ -1,9 +1,11 @@
 package com.lora.mianshihou.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import generator.domain.QuestionBankQuestion;
-import generator.service.QuestionBankQuestionService;
-import generator.mapper.QuestionBankQuestionMapper;
+import com.lora.mianshihou.mapper.QuestionBankQuestionMapper;
+import com.lora.mianshihou.model.entity.QuestionBankQuestion;
+import com.lora.mianshihou.service.QuestionBankQuestionService;
+import com.lora.mianshihou.service.QuestionBankService;
+
 import org.springframework.stereotype.Service;
 
 /**

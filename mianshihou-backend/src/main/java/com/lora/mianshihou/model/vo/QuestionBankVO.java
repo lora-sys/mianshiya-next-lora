@@ -1,19 +1,17 @@
 package com.lora.mianshihou.model.vo;
 
-import cn.hutool.json.JSONUtil;
 import com.lora.mianshihou.model.entity.QuestionBank;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 题库视图
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @author lora
+ *
  */
 @Data
 public class QuestionBankVO implements Serializable {
@@ -39,6 +37,16 @@ public class QuestionBankVO implements Serializable {
     private Long userId;
 
     /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * 图片
+     */
+    private String picture;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -48,10 +56,7 @@ public class QuestionBankVO implements Serializable {
      */
     private Date updateTime;
 
-    /**
-     * 标签列表
-     */
-    private List<String> tagList;
+
 
     /**
      * 创建用户信息
@@ -70,8 +75,6 @@ public class QuestionBankVO implements Serializable {
         }
         QuestionBank questionBank = new QuestionBank();
         BeanUtils.copyProperties(questionBankVO, questionBank);
-        List<String> tagList = questionBankVO.getTagList();
-        questionBank.setTags(JSONUtil.toJsonStr(tagList));
         return questionBank;
     }
 
@@ -87,7 +90,6 @@ public class QuestionBankVO implements Serializable {
         }
         QuestionBankVO questionBankVO = new QuestionBankVO();
         BeanUtils.copyProperties(questionBank, questionBankVO);
-        questionBankVO.setTagList(JSONUtil.toList(questionBank.getTags(), String.class));
         return questionBankVO;
     }
 }

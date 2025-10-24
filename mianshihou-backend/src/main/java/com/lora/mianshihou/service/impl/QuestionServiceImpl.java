@@ -10,8 +10,8 @@ import com.lora.mianshihou.exception.ThrowUtils;
 import com.lora.mianshihou.mapper.QuestionMapper;
 import com.lora.mianshihou.model.dto.question.QuestionQueryRequest;
 import com.lora.mianshihou.model.entity.Question;
-import com.lora.mianshihou.model.entity.QuestionFavour;
-import com.lora.mianshihou.model.entity.QuestionThumb;
+//import com.lora.mianshihou.model.entity.QuestionFavour;
+//import com.lora.mianshihou.model.entity.QuestionThumb;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionVO;
 import com.lora.mianshihou.model.vo.UserVO;
@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 /**
  * 题目服务实现
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * lora
+ *
  */
 @Service
 @Slf4j
@@ -55,6 +55,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         ThrowUtils.throwIf(question == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
         String title = question.getTitle();
+        String content = question.getContent();
         // 创建数据时，参数不能为空
         if (add) {
             // todo 补充校验规则
@@ -65,6 +66,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (StringUtils.isNotBlank(title)) {
             ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
         }
+        if (StringUtils.isNotBlank(content)) {
+            ThrowUtils.throwIf(content.length() > 10240, ErrorCode.PARAMS_ERROR, "内容过长");
+        }
+
     }
 
     /**
@@ -89,6 +94,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         String sortOrder = questionQueryRequest.getSortOrder();
         List<String> tagList = questionQueryRequest.getTags();
         Long userId = questionQueryRequest.getUserId();
+        String answer = questionQueryRequest.getAnswer();
         // todo 补充需要的查询条件
         // 从多字段中搜索
         if (StringUtils.isNotBlank(searchText)) {
@@ -98,6 +104,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // 模糊查询
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
+        queryWrapper.like(StringUtils.isNotBlank(answer),"answer",answer);
         // JSON 数组查询
         if (CollUtil.isNotEmpty(tagList)) {
             for (String tag : tagList) {
@@ -108,10 +115,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
         queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+
+
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
+
         return queryWrapper;
     }
 
@@ -133,28 +143,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Long userId = question.getUserId();
         User user = null;
         if (userId != null && userId > 0) {
-            user = userService.getById(userId);
+          user = userService.getById(userId);
         }
-        UserVO userVO = userService.getUserVO(user);
-        questionVO.setUser(userVO);
-        // 2. 已登录，获取用户点赞、收藏状态
-        long questionId = question.getId();
-        User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            // 获取点赞
-            QueryWrapper<QuestionThumb> questionThumbQueryWrapper = new QueryWrapper<>();
-            questionThumbQueryWrapper.in("questionId", questionId);
-            questionThumbQueryWrapper.eq("userId", loginUser.getId());
-            QuestionThumb questionThumb = questionThumbMapper.selectOne(questionThumbQueryWrapper);
-            questionVO.setHasThumb(questionThumb != null);
-            // 获取收藏
-            QueryWrapper<QuestionFavour> questionFavourQueryWrapper = new QueryWrapper<>();
-            questionFavourQueryWrapper.in("questionId", questionId);
-            questionFavourQueryWrapper.eq("userId", loginUser.getId());
-            QuestionFavour questionFavour = questionFavourMapper.selectOne(questionFavourQueryWrapper);
-            questionVO.setHasFavour(questionFavour != null);
-        }
-        // endregion
+      UserVO userVO = userService.getUserVO(user);
+      questionVO.setUser(userVO);
+
+      // endregion
 
         return questionVO;
     }
@@ -179,42 +173,21 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }).collect(Collectors.toList());
 
         // todo 可以根据需要为封装对象补充值，不需要的内容可以删除
-        // region 可选
+        //region 可选
         // 1. 关联查询用户信息
         Set<Long> userIdSet = questionList.stream().map(Question::getUserId).collect(Collectors.toSet());
         Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
                 .collect(Collectors.groupingBy(User::getId));
-        // 2. 已登录，获取用户点赞、收藏状态
-        Map<Long, Boolean> questionIdHasThumbMap = new HashMap<>();
-        Map<Long, Boolean> questionIdHasFavourMap = new HashMap<>();
-        User loginUser = userService.getLoginUserPermitNull(request);
-        if (loginUser != null) {
-            Set<Long> questionIdSet = questionList.stream().map(Question::getId).collect(Collectors.toSet());
-            loginUser = userService.getLoginUser(request);
-            // 获取点赞
-            QueryWrapper<QuestionThumb> questionThumbQueryWrapper = new QueryWrapper<>();
-            questionThumbQueryWrapper.in("questionId", questionIdSet);
-            questionThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<QuestionThumb> questionQuestionThumbList = questionThumbMapper.selectList(questionThumbQueryWrapper);
-            questionQuestionThumbList.forEach(questionQuestionThumb -> questionIdHasThumbMap.put(questionQuestionThumb.getQuestionId(), true));
-            // 获取收藏
-            QueryWrapper<QuestionFavour> questionFavourQueryWrapper = new QueryWrapper<>();
-            questionFavourQueryWrapper.in("questionId", questionIdSet);
-            questionFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<QuestionFavour> questionFavourList = questionFavourMapper.selectList(questionFavourQueryWrapper);
-            questionFavourList.forEach(questionFavour -> questionIdHasFavourMap.put(questionFavour.getQuestionId(), true));
-        }
-        // 填充信息
+        //2.填充信息
         questionVOList.forEach(questionVO -> {
             Long userId = questionVO.getUserId();
             User user = null;
-            if (userIdUserListMap.containsKey(userId)) {
-                user = userIdUserListMap.get(userId).get(0);
+            if(userIdUserListMap.containsKey(userId)){
+                user= userIdUserListMap.get(userId).get(0);
             }
             questionVO.setUser(userService.getUserVO(user));
-            questionVO.setHasThumb(questionIdHasThumbMap.getOrDefault(questionVO.getId(), false));
-            questionVO.setHasFavour(questionIdHasFavourMap.getOrDefault(questionVO.getId(), false));
         });
+
         // endregion
 
         questionVOPage.setRecords(questionVOList);

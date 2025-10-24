@@ -8,8 +8,8 @@ import org.apache.commons.lang3.ObjectUtils;
 /**
  * 用户角色枚举
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
  */
 public enum UserRoleEnum {
 
@@ -50,6 +50,19 @@ public enum UserRoleEnum {
                 return anEnum;
             }
         }
+        //假设枚举类很多？？？
+        // private static final Map<string : UserRoleEnum> VALUE_MAP = new HashMap<>();
+        // static {
+        // // 构建映射
+        // for ( UserRoleEnum role : values()){
+         //    VALUE_MAP.put(role.value,role)
+         //}
+        //  根据value获取枚举
+        // private static UserRoleEnum getEnumByValue(String value){
+        // if(ObjectUtils.isEmpty(value)){  return null; }
+        // }
+        // return VALUE_MAP.get(value);
+        //
         return null;
     }
 

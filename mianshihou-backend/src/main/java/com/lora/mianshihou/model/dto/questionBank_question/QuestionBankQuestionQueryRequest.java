@@ -1,4 +1,4 @@
-package com.lora.mianshihou.model.dto.questionBank;
+package com.lora.mianshihou.model.dto.questionBank_question;
 
 import com.lora.mianshihou.common.PageRequest;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class QuestionBankQueryRequest extends PageRequest implements Serializable {
+public class QuestionBankQuestionQueryRequest extends PageRequest implements Serializable {
 
     /**
      * id
@@ -27,34 +27,19 @@ public class QuestionBankQueryRequest extends PageRequest implements Serializabl
      */
     private Long notId;
 
-    /**
-     * 搜索词
-     */
-    private String searchText;
+
 
     /**
-     * 标题
+     * 题库 id
      */
-    private String title;
+    private Long questionBankId;
 
     /**
-     * 内容
+     * 题目 id
      */
-    private String content;
+    private Long questionId;
 
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 标签列表
-     */
-    private List<String> tags;
 
-    /**
-     * 图片
-     */
-    private String picture;
 
     /**
      * 创建用户 id

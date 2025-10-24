@@ -1,4 +1,4 @@
-package com.lora.mianshihou.model.dto.questionBank;
+package com.lora.mianshihou.model.dto.questionBank_question;
 
 import lombok.Data;
 
@@ -12,27 +12,22 @@ import java.util.List;
  *
  */
 @Data
-public class QuestionBankUpdateRequest implements Serializable {
+public class QuestionBankQuestionUpdateRequest implements Serializable {
 
     /**
      * id
      */
     private Long id;
+    /**
+     * 题库 id
+     */
+    private Long questionBankId;
 
     /**
-     * 标题
+     * 题目 id
      */
-    private String title;
+    private Long questionId;
 
-    /**
-     * 内容
-     */
-    private String content;
-
-    /**
-     * 标签列表
-     */
-    private List<String> tags;
 
     private static final long serialVersionUID = 1L;
 }

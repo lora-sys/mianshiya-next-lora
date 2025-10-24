@@ -8,8 +8,8 @@ import java.util.List;
 /**
  * 编辑题目请求
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
+ * @author lora
+ *
  */
 @Data
 public class QuestionEditRequest implements Serializable {
@@ -33,6 +33,11 @@ public class QuestionEditRequest implements Serializable {
      * 标签列表
      */
     private List<String> tags;
+
+    /**
+     * 推荐答案
+     */
+    private String answer;
 
     private static final long serialVersionUID = 1L;
 }

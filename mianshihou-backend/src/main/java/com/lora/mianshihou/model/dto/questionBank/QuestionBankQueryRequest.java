@@ -61,5 +61,7 @@ public class QuestionBankQueryRequest extends PageRequest implements Serializabl
      */
     private Long userId;
 
+
+
     private static final long serialVersionUID = 1L;
 }

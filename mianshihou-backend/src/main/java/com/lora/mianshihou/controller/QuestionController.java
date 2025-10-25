@@ -1,7 +1,11 @@
 package com.lora.mianshihou.controller;
 
-import cn.hutool.core.collection.CollUtil;
+
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
@@ -16,8 +20,10 @@ import com.lora.mianshihou.model.dto.question.QuestionEditRequest;
 import com.lora.mianshihou.model.dto.question.QuestionQueryRequest;
 import com.lora.mianshihou.model.dto.question.QuestionUpdateRequest;
 import com.lora.mianshihou.model.entity.Question;
+import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionVO;
+import com.lora.mianshihou.service.QuestionBankQuestionService;
 import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +51,9 @@ public class QuestionController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private QuestionBankQuestionService questionBankQuestionService;
 
     // region 增删改查
 
@@ -163,9 +172,9 @@ public class QuestionController {
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
+        ThrowUtils.throwIf(questionQueryRequest == null ,ErrorCode.PARAMS_ERROR);
         // 查询数据库
-        Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+        Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
         return ResultUtils.success(questionPage);
     }
 
@@ -181,6 +190,7 @@ public class QuestionController {
                                                                HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
+
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         // 查询数据库

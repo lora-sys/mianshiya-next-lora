@@ -1,5 +1,7 @@
 package com.lora.mianshihou.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 题目接口
@@ -36,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class QuestionController {
 
+
     @Resource
     private QuestionService questionService;
 
@@ -44,8 +48,7 @@ public class QuestionController {
 
     // region 增删改查
 
-    /**
-     * 创建题目
+    /** 创建题目
      *
      * @param questionAddRequest
      * @param request
@@ -57,6 +60,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
+        List<String> tags = questionAddRequest.getTags();
+        if (tags != null) {
+            question.setTags(JSONUtil.toJsonStr(tags));
+        }
         // 数据校验
         questionService.validQuestion(question, true);
         // todo 填充默认值
@@ -97,8 +104,7 @@ public class QuestionController {
         return ResultUtils.success(true);
     }
 
-    /**
-     * 更新题目（仅管理员可用）
+    /** 更新题目（仅管理员可用）
      *
      * @param questionUpdateRequest
      * @return
@@ -112,6 +118,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
+        // 手动处理 tags 字段的类型转换，从 List<String> 转为 JSON 字符串
+        if (questionUpdateRequest.getTags() != null) {
+            question.setTags(JSONUtil.toJsonStr(questionUpdateRequest.getTags()));
+        }
         // 数据校验
         questionService.validQuestion(question, false);
         // 判断是否存在
@@ -203,8 +213,7 @@ public class QuestionController {
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
-    /**
-     * 编辑题目（给用户使用）
+    /** 编辑题目（给用户使用）
      *
      * @param questionEditRequest
      * @param request
@@ -218,6 +227,10 @@ public class QuestionController {
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionEditRequest, question);
+        // 手动处理 tags 字段的类型转换，从 List<String> 转为 JSON 字符串
+        if (questionEditRequest.getTags() != null) {
+            question.setTags(JSONUtil.toJsonStr(questionEditRequest.getTags()));
+        }
         // 数据校验
         questionService.validQuestion(question, false);
         User loginUser = userService.getLoginUser(request);

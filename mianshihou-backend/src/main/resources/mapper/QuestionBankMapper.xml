@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="generator.mapper.QuestionBankMapper">
+<mapper namespace="com.lora.mianshihou.mapper.QuestionBankMapper">
 
-    <resultMap id="BaseResultMap" type="generator.domain.QuestionBank">
+    <resultMap id="BaseResultMap" type="com.lora.mianshihou.model.entity.QuestionBank">
             <id property="id" column="id" />
             <result property="title" column="title" />
             <result property="description" column="description" />

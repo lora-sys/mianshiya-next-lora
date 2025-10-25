@@ -3,8 +3,8 @@ package com.lora.mianshihou.constant;
 /**
  * 用户常量
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
  */
 public interface UserConstant {
 

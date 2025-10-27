@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lora.mianshihou.common.ErrorCode;
 import com.lora.mianshihou.constant.CommonConstant;
+import com.lora.mianshihou.exception.BusinessException;
 import com.lora.mianshihou.exception.ThrowUtils;
 import com.lora.mianshihou.mapper.QuestionBankQuestionMapper;
 import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankQuestionQueryRequest;
+import com.lora.mianshihou.model.entity.Question;
+import com.lora.mianshihou.model.entity.QuestionBank;
 import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 //import com.lora.mianshihou.model.entity.QuestionBankQuestionFavour;
 //import com.lora.mianshihou.model.entity.QuestionBankQuestionThumb;
@@ -16,6 +19,8 @@ import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
 import com.lora.mianshihou.model.vo.UserVO;
 import com.lora.mianshihou.service.QuestionBankQuestionService;
+import com.lora.mianshihou.service.QuestionBankService;
+import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
 import com.lora.mianshihou.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +46,11 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
 
     @Resource
     private UserService userService;
+   @Resource
+   private QuestionBankService questionBankService;
+
+   @Resource
+   private QuestionService questionService;
 
     /**
      * 校验数据
@@ -51,21 +61,36 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
     @Override
     public void validQuestionBank_Question(QuestionBankQuestion questionBank_question, boolean add) {
         ThrowUtils.throwIf(questionBank_question == null, ErrorCode.PARAMS_ERROR);
-//        // todo 从对象中取值
-//        String title = questionBank_question.getTitle();
-//        // 创建数据时，参数不能为空
-//        if (add) {
-//            // todo 补充校验规则
-//            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
-//        }
-//        // 修改数据时，有参数则校验
-//        // todo 补充校验规则
-//        if (StringUtils.isNotBlank(title)) {
-//            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
-//        }
+           //题库和题目必须存在
+        Long QuestionId = questionBank_question.getQuestionId();
+        Long QuestionBankId = questionBank_question.getQuestionBankId();
+    if(QuestionId !=null){
+        Question question = questionService.getById(QuestionId);
+         ThrowUtils.throwIf(question == null, ErrorCode.PARAMS_ERROR,"未发现题目存在");
+    }
+    if(QuestionBankId !=null){
+        QuestionBank questionBank = questionBankService.getById(QuestionBankId);
+         ThrowUtils.throwIf(questionBank == null, ErrorCode.PARAMS_ERROR,"未发现题库存在");
     }
 
-    /**
+
+        //
+        //
+        // todo 从对象中取值
+        //        String title = questionBank_question.getTitle();
+        //        // 创建数据时，参数不能为空
+        //        if (add) {
+        //            // todo 补充校验规则
+        //            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
+        //        }
+        //        // 修改数据时，有参数则校验
+        //        // todo 补充校验规则
+        //        if (StringUtils.isNotBlank(title)) {
+        //            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
+        //        }
+    }
+
+        /**
      * 获取查询条件
      *
      * @param questionBank_questionQueryRequest

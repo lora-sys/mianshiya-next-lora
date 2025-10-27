@@ -1,5 +1,9 @@
 package com.lora.mianshihou.controller;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
@@ -12,13 +16,16 @@ import com.lora.mianshihou.exception.ThrowUtils;
 import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankAddQuestionRequest;
 import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankQuestionUpdateRequest;
 import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankQuestionQueryRequest;
+import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankRemoveQuestionRequest;
 import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
 import com.lora.mianshihou.service.QuestionBankQuestionService;
+import com.lora.mianshihou.service.QuestionBankService;
 import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +47,8 @@ public class QuestionBank_QuestionController {
 
     @Resource
     private UserService userService;
+    @Autowired
+    private QuestionBankService questionBankService;
 
     // region 增删改查
 
@@ -201,6 +210,28 @@ public class QuestionBank_QuestionController {
                 questionBank_questionService.getQueryWrapper(questionBank_questionQueryRequest));
         // 获取封装类
         return ResultUtils.success(questionBank_questionService.getQuestionBank_QuestionVOPage(questionBank_questionPage, request));
+    }
+
+    /**
+     * 移除题库题目关联
+     *
+     * @param questionBankRemoveQuestionRequest
+     * @param
+     * @return
+     */
+    @PostMapping("/remove")
+    public BaseResponse<Boolean> removeQuestionBank_Question(@RequestBody QuestionBankRemoveQuestionRequest questionBankRemoveQuestionRequest) {
+       //参数校验
+        ThrowUtils.throwIf(questionBankRemoveQuestionRequest == null,ErrorCode.PARAMS_ERROR);
+       //构造查询
+        Long questionBankId = questionBankRemoveQuestionRequest.getQuestionBankId();
+        Long questionId = questionBankRemoveQuestionRequest.getQuestionId();
+      LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper= Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionBankId,questionBankId)
+                .eq(QuestionBankQuestion::getQuestionId,questionId);
+        boolean result = questionBank_questionService.remove(lambdaQueryWrapper);
+
+        return ResultUtils.success(result);
     }
 
 }

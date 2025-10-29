@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "openai": "ts-node openapi.config.ts"
   },
   "dependencies": {
     "@ant-design/icons": "~5.6.1",
@@ -14,14 +15,18 @@
     "@ant-design/pro-components": "catalog:",
     "@ant-design/pro-layout": "^7.22.7",
     "antd": "^5.27.6",
+    "axios": "^1.13.1",
     "next": "14.2.6",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "save-dev": "0.0.1-security",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@umijs/openapi": "^1.14.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
     "eslint-config-prettier": "^10.1.8",

@@ -2,8 +2,14 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { Button } from "antd";
 import GlobalFooter from "@/components/GlobalFooter";
+import { listQuestionByPageUsingPost } from "@/api/questionController";
+import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 
 export default function Home() {
+
+
+
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>

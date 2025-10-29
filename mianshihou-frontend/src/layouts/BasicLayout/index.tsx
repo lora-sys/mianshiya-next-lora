@@ -12,8 +12,12 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
-import "./index.css"
+import "./index.css";
 import { menus } from "../../../config/menu";
+import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
+
+
+
 //搜索条
 const SearchInput = () => {
   const { token } = theme.useToken();
@@ -55,8 +59,20 @@ interface Props {
   children: React.ReactNode;
 }
 
+
+/**
+ *
+ * 通用布局
+ * @param children
+ * @constructor
+ */
 export default function BasicLayout({ children }: Props) {
   const pathname = usePathname();
+
+  listQuestionBankVoByPageUsingPost({}).then((res)=>{
+    console.log(res)}
+  )
+
 
   return (
     <div
@@ -121,22 +137,14 @@ export default function BasicLayout({ children }: Props) {
               </a>,
             ];
           }}
-
           headerTitleRender={(logo, title, _) => {
-            const defaultDom = (
+            return (
               <a>
                 {logo}
                 {title}
               </a>
             );
-            if (typeof window === "undefined") return defaultDom;
-            if (document.body.clientWidth < 1400) {
-              return defaultDom;
-            }
-            if (_.isMobile) return defaultDom;
-            return <>{defaultDom}</>;
           }}
-
           //渲染底部栏
           footerRender={() => {
             return <GlobalFooter />;
@@ -144,8 +152,6 @@ export default function BasicLayout({ children }: Props) {
           menuDataRender={() => {
             return menus;
           }}
-
-
           onMenuHeaderClick={(e) => console.log(e)}
           //定义了菜单项如何渲染
           menuItemRender={(item, dom) => (

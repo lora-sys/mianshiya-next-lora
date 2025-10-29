@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "mianshihou",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,16 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "~5.6.1",
+    "@ant-design/nextjs-registry": "^1.1.0",
+    "@ant-design/pro-components": "catalog:",
+    "@ant-design/pro-layout": "^7.22.7",
+    "antd": "^5.27.6",
+    "next": "14.2.6",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.6"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.6"
+    "eslint-config-next": "14.2.6",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "3.6.2",
+    "typescript": "^5"
   }
 }

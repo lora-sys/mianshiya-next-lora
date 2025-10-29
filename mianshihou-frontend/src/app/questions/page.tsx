@@ -1,7 +1,6 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import { Button } from "antd";
-import GlobalFooter from "@/components/GlobalFooter";
 
 export default function Home() {
   return (
@@ -12,7 +11,23 @@ export default function Home() {
           <code className={styles.code}>src/app/page.tsx</code>
         </p>
         <Button type="primary">Primary Button</Button>
-
+        <div>
+          <a
+            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            By{"vercel "}
+            <Image
+              src="/vercel.svg"
+              alt="Vercel Logo"
+              className={styles.vercelLogo}
+              width={100}
+              height={24}
+              priority
+            />
+          </a>
+        </div>
       </div>
 
       <div className={styles.center}>

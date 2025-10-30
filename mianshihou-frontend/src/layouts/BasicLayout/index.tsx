@@ -17,8 +17,7 @@ import { menus } from "../../../config/menu";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores";
-
-
+import getAccessibleMenus from "@/app/access/menuAccess";
 
 //搜索条
 const SearchInput = () => {
@@ -61,7 +60,6 @@ interface Props {
   children: React.ReactNode;
 }
 
-
 /**
  *
  * 通用布局
@@ -69,15 +67,14 @@ interface Props {
  * @constructor
  */
 export default function BasicLayout({ children }: Props) {
-
+  //登录用户信息
   const loginUser = useSelector((state: RootState) => state.loginUser);
 
   const pathname = usePathname();
 
-  listQuestionBankVoByPageUsingPost({}).then((res)=>{
-    console.log(res)}
-  )
-
+  listQuestionBankVoByPageUsingPost({}).then((res) => {
+    console.log(res);
+  });
 
   return (
     <div
@@ -155,7 +152,7 @@ export default function BasicLayout({ children }: Props) {
             return <GlobalFooter />;
           }}
           menuDataRender={() => {
-            return menus;
+            return getAccessibleMenus(loginUser,menus);
           }}
           onMenuHeaderClick={(e) => console.log(e)}
           //定义了菜单项如何渲染

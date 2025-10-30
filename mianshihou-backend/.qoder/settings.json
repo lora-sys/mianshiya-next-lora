@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(!/mnt/d/mianshiya-lora/mianshihou-backend/**)",
+      "Edit(!/mnt/d/mianshiya-lora/mianshihou-backend/**)"
+    ],
+    "allow": [
+      "Read(/mnt/d/mianshiya-lora/mianshihou-backend/**)",
+      "Edit(/mnt/d/mianshiya-lora/mianshihou-backend/**)"
+    ]
+  },
+  "memoryImport": {},
+  "monitoring": {}
+}

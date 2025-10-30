@@ -14,11 +14,13 @@
     "@ant-design/nextjs-registry": "^1.1.0",
     "@ant-design/pro-components": "catalog:",
     "@ant-design/pro-layout": "^7.22.7",
+    "@reduxjs/toolkit": "^2.9.2",
     "antd": "^5.27.6",
     "axios": "^1.13.1",
     "next": "14.2.6",
     "react": "^18",
     "react-dom": "^18",
+    "react-redux": "^9.2.0",
     "save-dev": "0.0.1-security",
     "ts-node": "^10.9.2"
   },

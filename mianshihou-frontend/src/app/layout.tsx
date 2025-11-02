@@ -37,15 +37,16 @@ const InitLayout: React.FC<
     ) {
       if (res.data) {
       } else {
-        setTimeout(() => {
-          const testUser = {
-            userName: "测试用户",
-            id: 1,
-            userAvatar: "https://www.code-nav.cn/logo.png",
-            userRole: AccessEnum.ADMIN
-          };
-          dispatch(setLoginUser(testUser));
-        }, 3000);
+        //仅用于测试
+        // setTimeout(() => {
+        //   const testUser = {
+        //     userName: "测试用户",
+        //     id: 1,
+        //     userAvatar: "https://www.code-nav.cn/logo.png",
+        //     userRole: AccessEnum.ADMIN
+        //   };
+        //   dispatch(setLoginUser(testUser));
+        // }, 3000);
       }
     }
   }, [dispatch, pathname]);

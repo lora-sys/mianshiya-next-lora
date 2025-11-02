@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
 import { Dropdown, Input, theme } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,8 @@ import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController"
 import { useSelector } from "react-redux";
 import { RootState } from "@/stores";
 import getAccessibleMenus from "@/app/access/menuAccess";
+import MdEditor from "@/components/MdEditor";
+import MdViewer from "@/components/MdViewer";
 
 //搜索条
 const SearchInput = () => {
@@ -71,6 +73,7 @@ export default function BasicLayout({ children }: Props) {
   const loginUser = useSelector((state: RootState) => state.loginUser);
 
   const pathname = usePathname();
+  const [text,setText] = useState<string>("");
 
   listQuestionBankVoByPageUsingPost({}).then((res) => {
     console.log(res);

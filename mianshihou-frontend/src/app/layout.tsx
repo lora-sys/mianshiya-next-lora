@@ -9,7 +9,6 @@ import { getLoginUserUsingGet } from "@/api/userController";
 import { setLoginUser } from "@/stores/loginUser";
 import { usePathname } from "next/navigation";
 import AccessLayout from "@/app/access/AccessLayout";
-import AccessEnum from "@/app/access/accessEnum";
 
 /**
  * 全局初始化逻辑
@@ -30,24 +29,43 @@ const InitLayout: React.FC<
   //初始化全局用户状态
   const dispatch = useDispatch<AppDispatch>();
   const doInitLoginUser = useCallback(async () => {
-    const res = await getLoginUserUsingGet();
-    if (
-      !pathname.startsWith("/user/login") &&
-      !pathname.startsWith("/user/register")
-    ) {
-      if (res.data) {
+    try {
+      const response: any = await getLoginUserUsingGet();
+      
+      // 如果响应拦截器正常工作，这里应该直接是处理后的数据
+      // 检查响应结构是拦截器处理后的还是原始的
+      let result;
+      if (response.code !== undefined) {
+        // 响应拦截器已处理，response 就是我们需要的数据
+        result = response;
       } else {
-        //仅用于测试
-        // setTimeout(() => {
-        //   const testUser = {
-        //     userName: "测试用户",
-        //     id: 1,
-        //     userAvatar: "https://www.code-nav.cn/logo.png",
-        //     userRole: AccessEnum.ADMIN
-        //   };
-        //   dispatch(setLoginUser(testUser));
-        // }, 3000);
+        // 响应拦截器未处理，需要使用 response.data
+        result = response.data;
       }
+      
+      if (
+        !pathname.startsWith("/user/login") &&
+        !pathname.startsWith("/user/register")
+      ) {
+        if (result.data) {
+          //更新全局状态
+          dispatch(setLoginUser(result.data));
+        } else {
+          //仅用于测试
+          // setTimeout(() => {
+          //   const testUser = {
+          //     userName: "测试用户",
+          //     id: 1,
+          //     userAvatar: "https://www.code-nav.cn/logo.png",
+          //     userRole: AccessEnum.ADMIN
+          //   };
+          //   dispatch(setLoginUser(testUser));
+          // }, 3000);
+        }
+      }
+    } catch (error) {
+      // 获取用户信息失败，可能是未登录，不做特殊处理
+      console.log('获取登录用户信息失败', error);
     }
   }, [dispatch, pathname]);
 

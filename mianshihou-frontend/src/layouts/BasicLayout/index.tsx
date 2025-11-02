@@ -6,20 +6,21 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
-import { Dropdown, Input, theme } from "antd";
+import { Dropdown, Input, message, theme } from "antd";
 import React, { useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
 import { menus } from "../../../config/menu";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
-import { useSelector } from "react-redux";
-import { RootState } from "@/stores";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/stores";
 import getAccessibleMenus from "@/app/access/menuAccess";
-import MdEditor from "@/components/MdEditor";
-import MdViewer from "@/components/MdViewer";
+import { userLogoutUsingPost } from "@/api/userController";
+import { setLoginUser } from "@/stores/loginUser";
+import { DEFAULT_USER } from "@/constants/user";
 
 //搜索条
 const SearchInput = () => {
@@ -75,9 +76,45 @@ export default function BasicLayout({ children }: Props) {
   const pathname = usePathname();
   const [text, setText] = useState<string>("");
 
-  listQuestionBankVoByPageUsingPost({}).then((res) => {
-    console.log(res);
+  listQuestionBankVoByPageUsingPost({}).then((response: any) => {
+    // 如果响应拦截器正常工作，这里应该直接是处理后的数据
+    // 检查响应结构是拦截器处理后的还是原始的
+    let result;
+    if (response.code !== undefined) {
+      // 响应拦截器已处理，response 就是我们需要的数据
+      result = response;
+    } else {
+      // 响应拦截器未处理，需要使用 response.data
+      result = response.data;
+    }
+    console.log(result);
+  }).catch((error) => {
+    console.error('获取题库列表失败', error);
   });
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const userLogout = async () => {
+    try {
+      const response: any = await userLogoutUsingPost();
+      
+      // 如果响应拦截器正常工作，这里应该直接是处理后的数据
+      // 检查响应结构是拦截器处理后的还是原始的
+      let result;
+      if (response.code !== undefined) {
+        // 响应拦截器已处理，response 就是我们需要的数据
+        result = response;
+      } else {
+        // 响应拦截器未处理，需要使用 response.data
+        result = response.data;
+      }
+      
+      message.success("已经退出登录");
+      dispatch(setLoginUser(DEFAULT_USER));
+      router.push("/user/login");
+    } catch (e: any) {
+      message.error("注销失败：" + (e.message || "未知错误"));
+    }
+  };
 
   return (
     <div
@@ -111,6 +148,9 @@ export default function BasicLayout({ children }: Props) {
             size: "small",
             title: loginUser?.userName || "面试猴",
             render: (props, dom) => {
+              if (!loginUser.id) {
+                return <div onClick={()=>router.push("/user/login")}>{dom}</div>
+              }
               return (
                 <Dropdown
                   menu={{
@@ -121,6 +161,12 @@ export default function BasicLayout({ children }: Props) {
                         label: "退出登录",
                       },
                     ],
+                    onClick: async (event: { key: React.Key }) => {
+                      const { key } = event;
+                      if (key === "logout") {
+                        await userLogout();
+                      }
+                    },
                   }}
                 >
                   {dom}

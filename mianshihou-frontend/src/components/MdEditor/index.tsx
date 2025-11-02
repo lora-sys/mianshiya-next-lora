@@ -20,7 +20,7 @@ const MdEditor = (props: Props) => {
   return (
     <div className="md-editor">
       <Editor
-        value={value}
+        value={value || ""}
         placeholder={placeholder}
         mode="split"
         plugins={plugins}

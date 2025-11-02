@@ -13,6 +13,7 @@
     "@ant-design/icons": "~5.6.1",
     "@ant-design/nextjs-registry": "^1.1.0",
     "@ant-design/pro-components": "catalog:",
+    "@ant-design/pro-form": "^2.32.0",
     "@ant-design/pro-layout": "^7.22.7",
     "@bytemd/plugin-gfm": "^1.22.0",
     "@bytemd/plugin-highlight": "^1.22.0",

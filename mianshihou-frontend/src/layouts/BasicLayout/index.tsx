@@ -73,7 +73,7 @@ export default function BasicLayout({ children }: Props) {
   const loginUser = useSelector((state: RootState) => state.loginUser);
 
   const pathname = usePathname();
-  const [text,setText] = useState<string>("");
+  const [text, setText] = useState<string>("");
 
   listQuestionBankVoByPageUsingPost({}).then((res) => {
     console.log(res);
@@ -155,7 +155,7 @@ export default function BasicLayout({ children }: Props) {
             return <GlobalFooter />;
           }}
           menuDataRender={() => {
-            return getAccessibleMenus(loginUser,menus);
+            return getAccessibleMenus(loginUser, menus);
           }}
           onMenuHeaderClick={(e) => console.log(e)}
           //定义了菜单项如何渲染

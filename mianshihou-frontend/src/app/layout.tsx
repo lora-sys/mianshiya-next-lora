@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import BasicLayout from "@/layouts/BasicLayout";
 import { Provider, useDispatch } from "react-redux";
 import stores, { AppDispatch } from "@/stores";
@@ -16,12 +16,11 @@ import AccessLayout from "@/app/access/AccessLayout";
  */
 //高级组件设计，初始化状态
 const InitLayout: React.FC<
-  Readonly<{
-    children: React.ReactNode;
-  }>
+Readonly<{
+  children: React.ReactNode;
+}>
 > = ({ children }) => {
   const pathname = usePathname();
-
   /***
    * 全局初始化函数，有全局单次调用的函数，都可以写到这里
    *
@@ -71,8 +70,13 @@ const InitLayout: React.FC<
 
   useEffect(() => {
     doInitLoginUser();
-  }, [doInitLoginUser]);
-  return children;
+  }, []);
+  //这里渲染的dom树子节点，一定要直接渲染整的节点的，不然会导致服务端渲染的结构（容器）和客户端水合接受渲染（布局加容器）的不一致，引发水合问题
+ //保持首屏服务端与客户端渲染结构一致：不要再用条件渲染只返回 {children}；你现在 return <> {children} </> 已正确。
+  //如需彻底发挥 RSC/SSR：考虑把根 layout.tsx 去掉 "use client"，把需要 hooks 的 Provider/布局迁到一个单独的客户端组件里再包裹（可选，现状 SSR 已可用）。
+  // 如果还看到零星 hydration 警告，排查页面中是否有首屏非确定性渲染（如 Date.now()、Math.random()、依赖窗口尺寸/媒体查询的条件 DOM）
+  //不返回对象字面量。还是返回函数组件
+  return <>{children}</>;
 };
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

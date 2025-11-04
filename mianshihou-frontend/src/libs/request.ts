@@ -4,16 +4,31 @@
  */
 
 import axios from "axios";
-// 创建 Axios 示例
+
+// 在服务端渲染时，可能需要通过内部网络访问 API
+// 检查是否在服务端环境
+const isServer = typeof window === 'undefined';
+let baseURL = "http://localhost:8101";
+
+// 如果是在服务端环境中，可能需要使用不同的 URL
+if (isServer) {
+  // 在 Docker 或容器环境中，可能需要访问内部服务
+  // 可以通过环境变量配置
+  baseURL = process.env.INTERNAL_API_URL || process.env.API_URL || "http://localhost:8101";
+} else {
+  // 浏览器环境中，使用配置的 API 地址或默认值
+  baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8101";
+}
+
+// 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: "http://localhost:8101",
-  timeout: 10000,
-  withCredentials: true,
+  baseURL,
+  timeout: isServer ? 5000 : 10000, // 服务端渲染时使用更短的超时时间
+  withCredentials: !isServer, // 服务端通常不使用 cookies
   // `withCredentials` 表示跨域请求时是否需要使用凭证
 });
 
 
-//在请求或响应被 then 或 catch 处理前拦截它们。
 // 创建请求拦截器
 myAxios.interceptors.request.use(
   function (config) {
@@ -27,22 +42,24 @@ myAxios.interceptors.request.use(
 );
 
 
-
-
 // 创建响应拦截器
 myAxios.interceptors.response.use(
   // 2xx 响应触发
   function (response) {
     // 处理响应数据
     const { data } = response;
-    // 未登录
+    // 未登录 - 仅在浏览器环境中处理跳转
     if (data.code === 40100) {
-      // 不是获取用户信息接口，或者不是登录页面，则跳转到登录页面
-      if (
-        !response.request.responseURL.includes("user/get/login") &&
-        !window.location.pathname.includes("/user/login")
-      ) {
-        window.location.href = `/user/login?redirect=${window.location.href}`
+      // 检查是否在浏览器环境中
+      if (typeof window !== 'undefined') {
+        // 不是获取用户信息接口，或者不是登录页面，则跳转到登录页面
+        const requestUrl = response.config?.url || '';
+        if (
+          !requestUrl.includes("user/get/login") &&
+          !window.location.pathname.includes("/user/login")
+        ) {
+          window.location.href = `/user/login?redirect=${window.location.href}`;
+        }
       }
     } else if (data.code !== 0) {
       // 其他错误
@@ -56,4 +73,5 @@ myAxios.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
 export default myAxios;

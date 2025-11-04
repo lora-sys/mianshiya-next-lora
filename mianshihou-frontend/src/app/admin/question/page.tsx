@@ -10,7 +10,7 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
 import { Button, message, Space, Typography } from "antd";
 import React, { useRef, useState } from "react";
-import TagList from "@/components/TagList/page";
+import TagList from "@/components/TagList";
 import MdEditor from "@/components/MdEditor";
 
 /**

@@ -12,6 +12,7 @@ import { Button, message, Space, Typography } from "antd";
 import React, { useRef, useState } from "react";
 import TagList from "@/components/TagList";
 import MdEditor from "@/components/MdEditor";
+import UpdateBankModal from "@/app/admin/question/components/UpdateBankModal";
 
 /**
  * 题目管理页面
@@ -24,9 +25,10 @@ const QuestionAdminPage: React.FC = () => {
   // 是否显示更新窗口
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  // 当前题目点击的数据
   const [currentRow, setCurrentRow] = useState<API.Question>();
-
+  // 是否显示更新所属题库窗口
+  const [updateBankModalVisible, setUpdateBankModalVisible] =
+    useState<boolean>(false);
   /**
    * 删除节点
    *
@@ -58,6 +60,12 @@ const QuestionAdminPage: React.FC = () => {
       title: "id",
       dataIndex: "id",
       valueType: "text",
+      hideInForm: true,
+    },
+    {
+      title: "所属题库",
+      dataIndex: "questionBankId",
+      hideInTable: true,
       hideInForm: true,
     },
     {
@@ -150,7 +158,7 @@ const QuestionAdminPage: React.FC = () => {
           <Typography.Link
             onClick={() => {
               setCurrentRow(record);
-              setUpdateModalVisible(true);
+              setUpdateBankModalVisible(true);
             }}
           >
             修改所属题库
@@ -245,6 +253,16 @@ const QuestionAdminPage: React.FC = () => {
         }}
         onCancel={() => {
           setUpdateModalVisible(false);
+          setCurrentRow(undefined); // 恢复这行，确保关闭弹窗时重置当前行数据
+        }}
+      />
+      <UpdateBankModal
+        visible={updateBankModalVisible}
+        questionId={currentRow?.id}
+        onCancel={() => {
+          setUpdateBankModalVisible(false);
+          setCurrentRow(undefined); // 恢复这行，重置当前行数据
+          actionRef.current?.reload(); // 恢复这行，刷新表格数据
         }}
       />
     </PageContainer>

@@ -14,11 +14,11 @@ interface Props {
  */
 const QuestionBankList = (props: Props) => {
   const { questionBankList = [] } = props;
-
+  // prefetch 应用与如果连接请求很多，最开始会预渲染很多东西哦，使用prefetch 减少连接预渲染
   const questionBankView = (questionBank: API.QuestionBankVO) => {
     return (
       <Card>
-        <Link href={`/bank/${questionBank.id}`}>
+        <Link href={`/bank/${questionBank.id}`} prefetch={false}>
           <Card.Meta
             avatar={<Avatar src={questionBank.picture} />}
             title={questionBank.title}

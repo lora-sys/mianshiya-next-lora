@@ -48,18 +48,21 @@ declare namespace API {
   };
 
   type BaseResponsePageQuestionBankQuestionVO_ = {
+    records: never[];
     code?: number;
     data?: PageQuestionBankQuestionVO_;
     message?: string;
   };
 
   type BaseResponsePageQuestionBankVO_ = {
+    records: never[];
     code?: number;
     data?: PageQuestionBankVO_;
     message?: string;
   };
 
   type BaseResponsePageQuestionVO_ = {
+    records: never[];
     code?: number;
     data?: PageQuestionVO_;
     message?: string;
@@ -90,6 +93,8 @@ declare namespace API {
   };
 
   type BaseResponseQuestionBankVO_ = {
+    title: ReactNode;
+    questionPage: any;
     code?: number;
     data?: QuestionBankVO;
     message?: string;
@@ -377,6 +382,7 @@ declare namespace API {
   };
 
   type Question = {
+    tagList: string[] | undefined;
     answer?: string;
     content?: string;
     createTime?: string;
@@ -499,7 +505,7 @@ declare namespace API {
     description?: string;
     id?: number;
     picture?: string;
-    questionPage?: PageQuestion_;
+    questionPage?: PageQuestionVO_;
     title?: string;
     updateTime?: string;
     user?: UserVO;
@@ -539,6 +545,7 @@ declare namespace API {
   };
 
   type QuestionVO = {
+    answer?: string;
     content?: string;
     createTime?: string;
     id?: number;

@@ -32,6 +32,7 @@ const QuestionList = (props: Props) => {
                       ? `/bank/${questionBankId}/question/${item.id}`
                       : `/question/${item.id}`
                   }
+                  prefetch={false}
                 >
                   {item.title}
                 </Link>

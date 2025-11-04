@@ -20,6 +20,7 @@ import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
 import com.lora.mianshihou.model.vo.QuestionBankVO;
+import com.lora.mianshihou.model.vo.QuestionVO;
 import com.lora.mianshihou.service.QuestionBankService;
 import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
@@ -156,8 +157,12 @@ public class QuestionBankController {
         if(needQuestionQueryList  ) {
             QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setQuestionBankId(id);
+            //可以按需要支持更多的题目搜索参数，比如分页,
+            questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
+            questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
          Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-         questionBankV0.setQuestionPage(questionPage);
+         Page<QuestionVO> questionVoPage=questionService.getQuestionVOPage(questionPage,request);
+         questionBankV0.setQuestionPage(questionVoPage);
         }
         // 获取封装类
         return ResultUtils.success(questionBankV0);

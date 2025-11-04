@@ -1,9 +1,9 @@
 "use client";
 
-import { LogoutOutlined } from "@ant-design/icons";
+import { GithubFilled, LogoutOutlined } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
 import { Dropdown, message } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,10 +16,21 @@ import getAccessibleMenus from "@/app/access/menuAccess";
 import { userLogoutUsingPost } from "@/api/userController";
 import { setLoginUser } from "@/stores/loginUser";
 import { DEFAULT_USER } from "@/constants/user";
+import SearchInput from "@/layouts/BasicLayout/component/searchInput";
 
 interface Props {
   children: React.ReactNode;
 }
+
+
+
+
+
+
+
+
+
+
 
 /**
  *
@@ -32,7 +43,6 @@ export default function BasicLayout({ children }: Props) {
   const loginUser = useSelector((state: RootState) => state.loginUser);
 
   const pathname = usePathname();
-  const [text, setText] = useState<string>("");
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -114,6 +124,33 @@ export default function BasicLayout({ children }: Props) {
               </Dropdown>
             );
           },
+        }}
+        actionsRender={(props) => {
+          if (props.isMobile) return [];
+          //如果当前页面包含/questions ,则不显示搜索框
+          if(pathname.includes('/questions')) {
+            return [
+              <a
+                key="github"
+                href="https://github.com/liyupi/mianshiya-next"
+                target="_blank"
+              >
+                <GithubFilled key="GithubFilled" />
+              </a>,
+            ];
+
+
+          }
+          return [
+            <SearchInput key="search" />,
+            <a
+              key="github"
+              href="https://github.com/liyupi/mianshiya-next"
+              target="_blank"
+            >
+              <GithubFilled key="GithubFilled" />
+            </a>,
+          ];
         }}
         headerTitleRender={(logo, title, _) => {
           return (

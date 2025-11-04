@@ -57,6 +57,10 @@ public class QuestionVO implements Serializable {
      * 创建用户信息
      */
     private UserVO user;
+    /**
+     * 推荐答案
+     */
+    private String answer;
 
     /**
      * 封装类转对象

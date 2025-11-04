@@ -62,7 +62,7 @@ const QuestionBankAdminPage: React.FC = () => {
     },
     {
       title: "描述",
-      dataIndex: "description",
+      dataIndex: "descendription",
       valueType: "text",
     },
     {

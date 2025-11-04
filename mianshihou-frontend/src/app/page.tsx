@@ -7,7 +7,7 @@ import QuestionBankList from "@/components/QuestionBankList";
 import QuestionList from "@/components/QuestionList";
 import "./index.css";
 
-console.log(" ssr on server  ",typeof window) // 判断此时是否是跑在服务端的
+console.log(" ssr on server  ", typeof window); // 判断此时是否是跑在服务端的
 // 配置页面使用服务端渲染
 export const dynamic = "force-dynamic";
 
@@ -16,31 +16,56 @@ export const dynamic = "force-dynamic";
  * @constructor
  */
 export default async function HomePage() {
+  // let questionBankList: any[] = [];
+  // let questionList: any[] = [];
+  //
+  // try {
+  //   const res: any = await listQuestionBankVoByPageUsingPost({
+  //     pageSize: 12,
+  //     sortField: "createTime",
+  //     sortOrder: "descend",
+  //   });
+  //   questionBankList = res.data.records ?? [];
+  // } catch (e: any) {
+  //   // 在服务端渲染时，不能使用 message 组件
+  //   console.error("获取题库列表失败，", e.message);
+  // }
+  //
+  // try {
+  //   const res: any = await listQuestionVoByPageUsingPost({
+  //     pageSize: 12,
+  //     sortField: "createTime",
+  //     sortOrder: "descend",
+  //   });
+  //   questionList = res.data.records ?? [];
+  // } catch (e: any) {
+  //   // 在服务端渲染时，不能使用 message 组件
+  //   console.error("获取题目列表失败，", e.message);
+  // }
+
+  // 并发请求数据
   let questionBankList: any[] = [];
-  let questionList : any[] = [];
-  
-  try {
-    const res :any = await listQuestionBankVoByPageUsingPost({
-      pageSize: 12,
-      sortField: "createTime",
-      sortOrder: "descend",
-    });
-    questionBankList = res.data.records ?? [];
-  } catch (e:any) {
-    // 在服务端渲染时，不能使用 message 组件
-    console.error("获取题库列表失败，", e.message);
-  }
+  let questionList: any[] = [];
 
   try {
-    const res :any = await listQuestionVoByPageUsingPost({
-      pageSize: 12,
-      sortField: "createTime",
-      sortOrder: "descend",
-    });
-    questionList = res.data.records ?? [];
-  } catch (e :any) {
+    const [questionBankRes, questionlistRes] = await Promise.all([
+      listQuestionBankVoByPageUsingPost({
+        pageSize: 12,
+        sortField: "createTime",
+        sortOrder: "descend",
+      }),
+      listQuestionVoByPageUsingPost({
+        pageSize: 12,
+        sortField: "createTime",
+        sortOrder: "descend",
+      }),
+    ]);
+
+    questionList = questionlistRes.data.records ?? [];
+    questionBankList = questionBankRes.data.records ?? [];
+  } catch (e: any) {
     // 在服务端渲染时，不能使用 message 组件
-    console.error("获取题目列表失败，", e.message);
+    console.error("获取题目和题库列表数据失败", e.message);
   }
 
   return (

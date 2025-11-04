@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 /**
  * 题目服务实现
- *
+ * <p>
  * lora
  *
  */
@@ -114,7 +114,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // 模糊查询
         queryWrapper.like(StringUtils.isNotBlank(title), "title", title);
         queryWrapper.like(StringUtils.isNotBlank(content), "content", content);
-        queryWrapper.like(StringUtils.isNotBlank(answer),"answer",answer);
+        queryWrapper.like(StringUtils.isNotBlank(answer), "answer", answer);
         // JSON 数组查询
         if (CollUtil.isNotEmpty(tagList)) {
             for (String tag : tagList) {
@@ -153,12 +153,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Long userId = question.getUserId();
         User user = null;
         if (userId != null && userId > 0) {
-          user = userService.getById(userId);
+            user = userService.getById(userId);
         }
-      UserVO userVO = userService.getUserVO(user);
-      questionVO.setUser(userVO);
+        UserVO userVO = userService.getUserVO(user);
+        questionVO.setUser(userVO);
 
-      // endregion
+        // endregion
 
         return questionVO;
     }
@@ -192,8 +192,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         questionVOList.forEach(questionVO -> {
             Long userId = questionVO.getUserId();
             User user = null;
-            if(userIdUserListMap.containsKey(userId)){
-                user= userIdUserListMap.get(userId).get(0);
+            if (userIdUserListMap.containsKey(userId)) {
+                user = userIdUserListMap.get(userId).get(0);
             }
             questionVO.setUser(userService.getUserVO(user));
         });
@@ -211,32 +211,35 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
      * @param questionQueryRequest
      * @return
      */
-    public Page<Question> listQuestionByPage( QuestionQueryRequest questionQueryRequest) {
+    public Page<Question> listQuestionByPage(QuestionQueryRequest questionQueryRequest) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
 
         //题目表查询条件
-        QueryWrapper<Question> queryWrapper =this.getQueryWrapper(questionQueryRequest);
+        QueryWrapper<Question> queryWrapper = this.getQueryWrapper(questionQueryRequest);
 
 
         //根据题库查询题目列表接口
         //判断，取出值
         Long questionBankId = questionQueryRequest.getQuestionBankId();
-        if(questionBankId != null){
+        if (questionBankId != null) {
             //查询题库里的id,  都查？/分页查询？
             LambdaQueryWrapper<QuestionBankQuestion> LambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
                     .select(QuestionBankQuestion::getQuestionId)
-                    .eq(QuestionBankQuestion::getQuestionBankId,questionBankId);
-            List<QuestionBankQuestion>  questionList=questionBankQuestionService.list(LambdaQueryWrapper);
-            if(CollUtil.isNotEmpty(questionList)){
+                    .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
+            List<QuestionBankQuestion> questionList = questionBankQuestionService.list(LambdaQueryWrapper);
+            if (CollUtil.isNotEmpty(questionList)) {
                 //取出对象中所有的题目id存储在集合去重作为一个集合
                 Set<Long> questionIdList = questionList.stream().map(QuestionBankQuestion::getQuestionId).collect(Collectors.toSet());
-                queryWrapper.in("id",questionIdList);
+                queryWrapper.in("id", questionIdList);
+            } else {
+                //题库为空，返回空列表
+                return new Page<>(current,size,0);
             }
 
         }
         // 查询数据库
-        Page<Question> questionPage = this.page(new Page<>(current, size),queryWrapper);
+        Page<Question> questionPage = this.page(new Page<>(current, size), queryWrapper);
         // 获取封装类
         return questionPage;
     }

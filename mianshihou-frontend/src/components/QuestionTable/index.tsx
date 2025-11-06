@@ -1,6 +1,9 @@
 //封装次页面为客户端组件，然后从服务端组件引入
 "use client";
-import { listQuestionVoByPageUsingPost } from "@/api/questionController";
+import {
+  listQuestionVoByPageUsingPost,
+  searchQuestionVoByPageUsingPost,
+} from "@/api/questionController";
 import type {
   ActionType,
   ProColumns,
@@ -45,9 +48,20 @@ const QuestionTablePage: React.FC<Props> = (props) => {
       title: "标题",
       dataIndex: "title",
       valueType: "text",
+      hideInSearch: true,
       render: (_, record) => {
-        return <Link href={`/question/${record.id}`} prefetch={false}> {record.title}</Link>;
+        return (
+          <Link href={`/question/${record.id}`} prefetch={false}>
+            {record.title}
+          </Link>
+        );
       },
+    },
+    {
+      title: "搜索",
+      dataIndex: "searchText",
+      valueType: "text",
+      hideInTable: true,
     },
     {
       title: "标签",
@@ -101,7 +115,7 @@ const QuestionTablePage: React.FC<Props> = (props) => {
             const sortOrder =
               (sort as Record<string, any>)?.[sortField] || "desc";
 
-            const response: any = await listQuestionVoByPageUsingPost({
+            const response: any = await searchQuestionVoByPageUsingPost({
               ...params,
               sortField,
               sortOrder,

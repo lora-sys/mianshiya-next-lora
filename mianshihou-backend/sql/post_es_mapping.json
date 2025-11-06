@@ -1,30 +1,22 @@
+
 {
   "aliases": {
-    "post": {}
+    "question": {}
   },
   "mappings": {
     "properties": {
+      "id": {
+        "type": "keyword"
+      },
       "title": {
         "type": "text",
         "analyzer": "ik_max_word",
-        "search_analyzer": "ik_smart",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "search_analyzer": "ik_smart"
       },
       "content": {
         "type": "text",
         "analyzer": "ik_max_word",
-        "search_analyzer": "ik_smart",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "search_analyzer": "ik_smart"
       },
       "tags": {
         "type": "keyword"
@@ -39,10 +31,12 @@
         "type": "keyword"
       },
       "createTime": {
-        "type": "date"
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
       },
       "updateTime": {
-        "type": "date"
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss"
       },
       "isDelete": {
         "type": "keyword"

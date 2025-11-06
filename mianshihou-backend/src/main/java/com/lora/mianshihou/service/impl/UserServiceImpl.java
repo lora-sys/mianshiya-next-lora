@@ -1,12 +1,11 @@
 package com.lora.mianshihou.service.impl;
 
-import static com.lora.mianshihou.constant.UserConstant.USER_LOGIN_STATE;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lora.mianshihou.common.ErrorCode;
 import com.lora.mianshihou.constant.CommonConstant;
+import com.lora.mianshihou.constant.RedissonConstant;
 import com.lora.mianshihou.exception.BusinessException;
 import com.lora.mianshihou.mapper.UserMapper;
 import com.lora.mianshihou.model.dto.user.UserQueryRequest;
@@ -16,26 +15,38 @@ import com.lora.mianshihou.model.vo.LoginUserVO;
 import com.lora.mianshihou.model.vo.UserVO;
 import com.lora.mianshihou.service.UserService;
 import com.lora.mianshihou.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RBitSet;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.lora.mianshihou.constant.UserConstant.USER_LOGIN_STATE;
+
 /**
  * 用户服务实现
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
  */
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Resource
+    private RedissonClient redissonClient;
 
     /**
      * 盐值，混淆密码
@@ -269,4 +280,78 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 sortField);
         return queryWrapper;
     }
+
+    /**
+     *
+     * 添加用户id签到记录
+     *
+     * @param userId
+     * @return 当前用户是否已经签到成功
+     */
+    @Override
+    public boolean addUserSignIn(long userId) {
+        LocalDate date = LocalDate.now();
+        String key = RedissonConstant.getUSER_SIGN_IN_REDIS_KEY_PREFIX(date.getYear(), userId);
+        //获取redis的bitmap
+        RBitSet signInBitSet = redissonClient.getBitSet(key);
+        //获取当前日期的式一年的第几天，，然后作为偏移量（从1开始计数）
+        int offset = date.getDayOfYear();
+        //查询当前天有没有签到
+        if (!signInBitSet.get(offset)) {
+            //如果当天没用签到，则设置
+            signInBitSet.set(offset, true);
+        }
+        //当前天已经签到
+        return true;
+    }
+
+    /**
+     * 查询用户某个年份的签到记录
+     *
+     * @param userId
+     * @param year
+     * @return
+     */
+    @Override
+    public List<Integer> getUserSignInRecord(long userId, Integer year) {
+        if (year == null) {
+            LocalDate date = LocalDate.now();
+            year = date.getYear();
+        }
+        String key = RedissonConstant.getUSER_SIGN_IN_REDIS_KEY_PREFIX(year, userId);
+        //获取redis的bitmap
+
+        RBitSet signInBitSet = redissonClient.getBitSet(key);
+
+        //性能优化 ，加载Bitset到内存，避免后端读取时，发送多次请求
+        BitSet bitSet = signInBitSet.asBitSet();
+        //构造返回结果
+//        Map<LocalDate, Boolean> result = new LinkedHashMap<>();
+        //统计签到的日期列表
+        List<Integer> dayList = new ArrayList<>();
+        //获取当前年份的总天数
+        int totalDays = Year.of(year).length();
+        //从索引0开始查找下一个被设置为1的位
+        int index = bitSet.nextSetBit(0);
+        while (index >= 0) {
+            dayList.add(index);
+            //查找下一个被设置为1的位
+            index = bitSet.nextSetBit(index + 1);
+        }
+//        //获取每天的签到状态
+//        for (int dayOfYear = 1; dayOfYear <= totalDays; dayOfYear++) {
+//
+//            //获取value:当天是否有刷题
+//            boolean hasRecord = bitSet.get(dayOfYear);
+//           //结果放入map
+//            result.put(currentDate, hasRecord);
+//
+//            if( hasRecord) {
+//                //如果当前天签到了
+//                dayList.add(dayOfYear);
+//            }
+//        }
+        return dayList;
+    }
+    //返回值优化，计算时间耗时，传输数据多，效率低
 }

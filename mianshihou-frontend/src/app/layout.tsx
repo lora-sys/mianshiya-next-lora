@@ -2,7 +2,7 @@
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import React, { useCallback, useEffect, useState } from "react";
-import BasicLayout from "@/layouts/BasicLayout";
+import { BasicLayout } from "@/layouts/BasicLayout";
 import { Provider, useDispatch } from "react-redux";
 import stores, { AppDispatch } from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";

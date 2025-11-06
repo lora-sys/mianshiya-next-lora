@@ -6,15 +6,19 @@ import com.lora.mianshihou.model.dto.user.UserQueryRequest;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.LoginUserVO;
 import com.lora.mianshihou.model.vo.UserVO;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
 /**
  * 用户服务
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
  */
 public interface UserService extends IService<User> {
 
@@ -118,4 +122,23 @@ public interface UserService extends IService<User> {
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
+
+    /**
+     *
+     * 添加用户id签到记录
+     *
+     * @param userId
+     * @return 当前用户是否已经签到成功
+     */
+    boolean addUserSignIn(long userId);
+
+
+    /**
+     * 查询用户某个年份的签到记录
+     *
+     * @param userId
+     * @param year
+     * @return
+     */
+    List<Integer> getUserSignInRecord(long userId, Integer year);
 }

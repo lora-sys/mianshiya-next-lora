@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lora.mianshihou.model.vo.QuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author yanBingZhao
@@ -57,4 +58,9 @@ public interface QuestionService extends IService<Question> {
      * @return
      */
    Page<Question> listQuestionByPage(QuestionQueryRequest questionQueryRequest) ;
+
+    /**
+     * 批量删除题目
+     */
+   void batchDeleteQuestions(List<Long> questionIdList);
 }

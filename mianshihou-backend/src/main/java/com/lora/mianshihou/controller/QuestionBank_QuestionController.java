@@ -13,10 +13,7 @@ import com.lora.mianshihou.common.ResultUtils;
 import com.lora.mianshihou.constant.UserConstant;
 import com.lora.mianshihou.exception.BusinessException;
 import com.lora.mianshihou.exception.ThrowUtils;
-import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankAddQuestionRequest;
-import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankQuestionUpdateRequest;
-import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankQuestionQueryRequest;
-import com.lora.mianshihou.model.dto.questionBank_question.QuestionBankRemoveQuestionRequest;
+import com.lora.mianshihou.model.dto.questionBank_question.*;
 import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
@@ -24,12 +21,14 @@ import com.lora.mianshihou.service.QuestionBankQuestionService;
 import com.lora.mianshihou.service.QuestionBankService;
 import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 题库题目接口
@@ -49,6 +48,8 @@ public class QuestionBank_QuestionController {
     private UserService userService;
     @Autowired
     private QuestionBankService questionBankService;
+    @Autowired
+    private QuestionBankQuestionService questionBankQuestionService;
 
     // region 增删改查
 
@@ -174,7 +175,7 @@ public class QuestionBank_QuestionController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionBankQuestionVO>> listQuestionBank_QuestionVOByPage(@RequestBody QuestionBankQuestionQueryRequest questionBank_questionQueryRequest,
-                                                               HttpServletRequest request) {
+                                                                                        HttpServletRequest request) {
         long current = questionBank_questionQueryRequest.getCurrent();
         long size = questionBank_questionQueryRequest.getPageSize();
         // 限制爬虫
@@ -194,8 +195,7 @@ public class QuestionBank_QuestionController {
      * @return
      */
     @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<QuestionBankQuestionVO>> listMyQuestionBank_QuestionVOByPage(@RequestBody QuestionBankQuestionQueryRequest questionBank_questionQueryRequest,HttpServletRequest request)
-    {
+    public BaseResponse<Page<QuestionBankQuestionVO>> listMyQuestionBank_QuestionVOByPage(@RequestBody QuestionBankQuestionQueryRequest questionBank_questionQueryRequest, HttpServletRequest request) {
 
         ThrowUtils.throwIf(questionBank_questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
@@ -221,17 +221,60 @@ public class QuestionBank_QuestionController {
      */
     @PostMapping("/remove")
     public BaseResponse<Boolean> removeQuestionBank_Question(@RequestBody QuestionBankRemoveQuestionRequest questionBankRemoveQuestionRequest) {
-       //参数校验
-        ThrowUtils.throwIf(questionBankRemoveQuestionRequest == null,ErrorCode.PARAMS_ERROR);
-       //构造查询
+        //参数校验
+        ThrowUtils.throwIf(questionBankRemoveQuestionRequest == null, ErrorCode.PARAMS_ERROR);
+        //构造查询
         Long questionBankId = questionBankRemoveQuestionRequest.getQuestionBankId();
         Long questionId = questionBankRemoveQuestionRequest.getQuestionId();
-      LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper= Wrappers.lambdaQuery(QuestionBankQuestion.class)
-                .eq(QuestionBankQuestion::getQuestionBankId,questionBankId)
-                .eq(QuestionBankQuestion::getQuestionId,questionId);
+        LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
+                .eq(QuestionBankQuestion::getQuestionId, questionId);
         boolean result = questionBank_questionService.remove(lambdaQueryWrapper);
 
         return ResultUtils.success(result);
     }
 
+    /**
+     * 批量添加题目到题库
+     *
+     * @param questionBankBatchAddQuestionRequest
+     * @return result
+     *
+     */
+    @PostMapping("/add/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchAddQuestionToBank
+    (
+            @RequestBody QuestionBankBatchAddQuestionRequest questionBankBatchAddQuestionRequest,
+            HttpServletRequest request
+    ) {
+        ThrowUtils.throwIf(questionBankBatchAddQuestionRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        Long questionBankId = questionBankBatchAddQuestionRequest.getQuestionBankId();
+        List<Long> questionIdList =questionBankBatchAddQuestionRequest.getQuestionIdList();
+        questionBankQuestionService.batchAddQuestionToBank(questionIdList, questionBankId, loginUser);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 批量从删除题目
+     *
+     * @param questionBankBatchRemoveQuestionRequest
+     * @return result
+     *
+     */
+    @PostMapping("/remove/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchRemoveQuestionToBank
+    (
+            @RequestBody QuestionBankBatchRemoveQuestionRequest questionBankBatchRemoveQuestionRequest,
+            HttpServletRequest request
+    ) {
+
+        ThrowUtils.throwIf(questionBankBatchRemoveQuestionRequest == null, ErrorCode.PARAMS_ERROR);
+        Long questionBankId =questionBankBatchRemoveQuestionRequest.getQuestionBankId();
+        List<Long> questionIdList = questionBankBatchRemoveQuestionRequest.getQuestionIdList();
+        questionBankQuestionService.batchRemoveQuestionFromToBank(questionIdList, questionBankId);
+        return ResultUtils.success(true);
+    }
 }

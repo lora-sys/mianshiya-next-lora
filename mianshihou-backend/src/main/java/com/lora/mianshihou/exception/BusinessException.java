@@ -5,14 +5,13 @@ import com.lora.mianshihou.common.ErrorCode;
 /**
  * 自定义异常类
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
+/**
+ * 错误码
  */
 public class BusinessException extends RuntimeException {
 
-    /**
-     * 错误码
-     */
     private final int code;
 
     public BusinessException(int code, String message) {

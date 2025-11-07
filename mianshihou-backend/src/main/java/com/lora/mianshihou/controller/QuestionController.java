@@ -15,10 +15,7 @@ import com.lora.mianshihou.common.ResultUtils;
 import com.lora.mianshihou.constant.UserConstant;
 import com.lora.mianshihou.exception.BusinessException;
 import com.lora.mianshihou.exception.ThrowUtils;
-import com.lora.mianshihou.model.dto.question.QuestionAddRequest;
-import com.lora.mianshihou.model.dto.question.QuestionEditRequest;
-import com.lora.mianshihou.model.dto.question.QuestionQueryRequest;
-import com.lora.mianshihou.model.dto.question.QuestionUpdateRequest;
+import com.lora.mianshihou.model.dto.question.*;
 import com.lora.mianshihou.model.entity.Question;
 import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
@@ -58,14 +55,15 @@ public class QuestionController {
 
     // region 增删改查
 
-    /** 创建题目
+    /**
+     * 创建题目
      *
      * @param questionAddRequest
      * @param request
      * @return
      */
     @PostMapping("/add")
-    @AuthCheck(mustRole=UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(questionAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
@@ -96,7 +94,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/delete")
-    @AuthCheck(mustRole=UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -116,7 +114,8 @@ public class QuestionController {
         return ResultUtils.success(true);
     }
 
-    /** 更新题目（仅管理员可用）
+    /**
+     * 更新题目（仅管理员可用）
      *
      * @param questionUpdateRequest
      * @return
@@ -173,7 +172,7 @@ public class QuestionController {
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
-        ThrowUtils.throwIf(questionQueryRequest == null ,ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
         return ResultUtils.success(questionPage);
@@ -226,14 +225,15 @@ public class QuestionController {
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
-    /** 编辑题目（给用户使用）
+    /**
+     * 编辑题目（给用户使用）
      *
      * @param questionEditRequest
      * @param request
      * @return
      */
     @PostMapping("/edit")
-    @AuthCheck(mustRole=UserConstant.ADMIN_ROLE)
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest, HttpServletRequest request) {
         if (questionEditRequest == null || questionEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -271,11 +271,17 @@ public class QuestionController {
         ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // todo 取消注释开启 ES（须先配置 ES）
         // 查询 ES
-         Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
+        Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
         // 查询数据库（作为没有 ES 的降级方案）
 //        Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
-
+    @PostMapping("/batch/delete")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestion(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
 }

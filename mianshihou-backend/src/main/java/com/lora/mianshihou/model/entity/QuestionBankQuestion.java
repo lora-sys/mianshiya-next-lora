@@ -1,9 +1,7 @@
 package com.lora.mianshihou.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
 import lombok.Data;
 
@@ -40,6 +38,12 @@ public class QuestionBankQuestion {
      */
     private Date createTime;
 
+
+    /**
+     * 删除逻辑
+     */
+     @TableLogic
+     private Integer isDelete;
     /**
      * 更新时间
      */

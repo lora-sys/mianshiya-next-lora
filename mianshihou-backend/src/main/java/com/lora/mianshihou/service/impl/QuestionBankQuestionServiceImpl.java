@@ -1,7 +1,6 @@
 package com.lora.mianshihou.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -32,13 +31,11 @@ import org.springframework.aop.framework.AopContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.desktop.AppEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -357,25 +354,108 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
      * @param questionBankId
      *
      */
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public void batchRemoveQuestionFromToBank(List<Long> questionIdList, long questionBankId) {
+//        //参数校验
+//
+//        ThrowUtils.throwIf(questionIdList == null, ErrorCode.PARAMS_ERROR, "题目列表id不能为空");
+//        ThrowUtils.throwIf(questionBankId <= 0, ErrorCode.PARAMS_ERROR, "题库id非法");
+//
+//        //执行删除关联操作
+//        for (Long questionId : questionIdList) {
+//            //构造查询
+//            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+//                    .eq(QuestionBankQuestion::getQuestionId, questionId)
+//                    .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
+//            boolean result = this.remove(lambdaQueryWrapper);
+//            ThrowUtils.throwIf(!result, ErrorCode.PARAMS_ERROR, "从题库删除题目");
+//        }
+//
+//    }
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void batchRemoveQuestionFromToBank(List<Long> questionIdList, long questionBankId) {
         //参数校验
-
         ThrowUtils.throwIf(questionIdList == null, ErrorCode.PARAMS_ERROR, "题目列表id不能为空");
         ThrowUtils.throwIf(questionBankId <= 0, ErrorCode.PARAMS_ERROR, "题库id非法");
 
-        //执行删除关联操作
-        for (Long questionId : questionIdList) {
-            //构造查询
-            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
-                    .eq(QuestionBankQuestion::getQuestionId, questionId)
-                    .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
-            boolean result = this.remove(lambdaQueryWrapper);
-            ThrowUtils.throwIf(!result, ErrorCode.PARAMS_ERROR, "从题库删除题目");
+        //检查题库是否存在
+        QuestionBank questionBank = questionBankService.getById(questionBankId);
+        ThrowUtils.throwIf(questionBank == null, ErrorCode.PARAMS_ERROR, "题库不存在");
+
+        //先查询出实际存在于题库中的题目
+        LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
+                .in(QuestionBankQuestion::getQuestionId, questionIdList);
+
+        List<QuestionBankQuestion> existQuestionList = this.list(lambdaQueryWrapper);
+        ThrowUtils.throwIf(CollUtil.isEmpty(existQuestionList), ErrorCode.PARAMS_ERROR, "没有找到要删除的题目");
+
+        //获取实际存在的题目ID
+        List<Long> validQuestionIdList = existQuestionList.stream()
+                .map(QuestionBankQuestion::getQuestionId)
+                .collect(Collectors.toList());
+
+        // 自定义线程池
+        ThreadPoolExecutor customExecutor = new ThreadPoolExecutor(
+                20, 50, 60L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(1000),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        //分批处理，每批1000条
+        int batchSize = 1000;
+        int totalSize = validQuestionIdList.size();
+
+        for (int i = 0; i < totalSize; i += batchSize) {
+            List<Long> subList = validQuestionIdList.subList(i, Math.min(i + batchSize, totalSize));
+
+            //获取代理对象
+            QuestionBankQuestionServiceImpl questionBankQuestionService = (QuestionBankQuestionServiceImpl) AopContext.currentProxy();
+
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                questionBankQuestionService.batchRemoveQuestionFromToBankInner(subList, questionBankId);
+            }, customExecutor).exceptionally(ex -> {
+                log.error("批次删除任务执行失败", ex);
+                return null;
+            });
+
+            futures.add(future);
         }
 
+        //等待所有批次完成
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        customExecutor.shutdown();
     }
+
+    /**
+     * 批量删除题目到题库事务方法，仅供内部使用
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void batchRemoveQuestionFromToBankInner(List<Long> questionIds, long questionBankId) {
+        try {
+            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                    .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
+                    .in(QuestionBankQuestion::getQuestionId, questionIds);
+
+            boolean result = this.remove(lambdaQueryWrapper);
+            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "批量删除题目失败");
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("数据库完整性约束违反, 错误信息: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "删除操作违反数据库约束");
+        } catch (DataAccessException e) {
+            log.error("数据库操作失败, 错误信息: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "数据库操作失败");
+        } catch (Exception e) {
+            log.error("批量删除题目时发生未知错误，错误信息: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "批量删除题目失败");
+        }
+    }
+
 
 
 }

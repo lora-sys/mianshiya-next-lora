@@ -350,6 +350,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // 获取封装类
         return questionPage;
     }
+
     /**
      * 批量删除题目
      */
@@ -357,15 +358,38 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Transactional(rollbackFor = Exception.class)
     public void batchDeleteQuestions(List<Long> questionIdList) {
         ThrowUtils.throwIf(CollUtil.isEmpty(questionIdList), ErrorCode.PARAMS_ERROR, "要删除的题目列表不能为空");
-        for (Long questionId : questionIdList) {
-            boolean result = this.removeById(questionId);
-            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目失败");
-            // 移除题目题库关系
-            // 构造查询
-            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
-                    .eq(QuestionBankQuestion::getQuestionId, questionId);
-            result = questionBankQuestionService.remove(lambdaQueryWrapper);
-            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目题库关联失败");
-        }
+//        for (Long questionId : questionIdList) {
+        //使用matbatis plus 的批量删除功能
+        // removeBatchByIds：专门为批量删除设计，性能更好
+        //removeByIds：通用方法，内部也会批量处理
+//            boolean result = this.removeById(questionId);
+        //从N次数据库操作减少到1次（或M次，M=批次数量），比如删除1000条题目，从1000次操作减少到1次操作！
+        //分批次插入
+        // 手动分批，避免SQL语句过长
+//        int batchSize = 1000;
+//        int totalSize = questionIdList.size();
+//
+//        for (int i = 0; i < totalSize; i += batchSize) {
+//            List<Long> subList = questionIdList.subList(i, Math.min(i + batchSize, totalSize));
+//
+//            // 批量删除题目
+//            boolean result = this.removeByIds(subList);
+//            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目失败");
+//
+//            // 批量删除题目题库关系
+//            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+//                    .in(QuestionBankQuestion::getQuestionId, subList);
+//            result = questionBankQuestionService.remove(lambdaQueryWrapper);
+//            ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目题库关联失败");
+//        }
+        boolean result = this.removeBatchByIds(questionIdList);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目失败");
+        // 移除题目题库关系
+        // 构造查询
+        LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionId, questionIdList);
+        result = questionBankQuestionService.remove(lambdaQueryWrapper);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "删除题目题库关联失败");
     }
+//    }
 }

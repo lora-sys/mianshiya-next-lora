@@ -1,6 +1,6 @@
 # 公共配置文件
-# @author <a href="https://github.com/lilora">程序员鱼皮</a>
-# @from <a href="https://lora.icu">编程导航知识星球</a>
+# @author lora
+#
 spring:
   application:
     name: mianshihou
@@ -128,6 +128,14 @@ mybatis-plus:
       logic-delete-field: isDelete # 全局逻辑删除的实体字段名
       logic-delete-value: 1 # 逻辑已删除值（默认为 1）
       logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+
+# 热key 探测
+hotkey:
+  appName: mianshihou
+  caffeineSize: 10000
+  pushPeriod: 1000
+  etcd-server: http://localhost:2379
+
 # 微信相关
 wx:
   # 微信公众平台

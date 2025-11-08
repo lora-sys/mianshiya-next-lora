@@ -1,6 +1,7 @@
 package com.lora.mianshihou.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
 import com.lora.mianshihou.common.DeleteRequest;
@@ -26,10 +27,14 @@ import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 题库接口
@@ -51,6 +56,8 @@ public class QuestionBankController {
 
     @Resource
     QuestionService questionService;
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
     // region 增删改查
 
     /**
@@ -142,30 +149,161 @@ public class QuestionBankController {
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<QuestionBankVO> getQuestionBankVOById(QuestionBankQueryRequest questionbankqueryrequest  ,HttpServletRequest request) {
+    public BaseResponse<QuestionBankVO> getQuestionBankVOById(QuestionBankQueryRequest questionbankqueryrequest, HttpServletRequest request) {
 
-        ThrowUtils.throwIf(questionbankqueryrequest == null,ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(questionbankqueryrequest == null, ErrorCode.PARAMS_ERROR);
         Long id = questionbankqueryrequest.getId();
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
-        // 查询数据库
-        QuestionBank questionBank = questionBankService.getById(id);
-        ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
-        //查询题库封装类
-        QuestionBankVO questionBankV0= questionBankService.getQuestionBankVO(questionBank,request);
-        //是否要关联查询题库下的题目列表
-        boolean needQuestionQueryList = questionbankqueryrequest.isNeedQueryQuestionList();
-        if(needQuestionQueryList  ) {
-            QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
-            questionQueryRequest.setQuestionBankId(id);
-            //可以按需要支持更多的题目搜索参数，比如分页,
-            questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
-            questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
-         Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-         Page<QuestionVO> questionVoPage=questionService.getQuestionVOPage(questionPage,request);
-         questionBankV0.setQuestionPage(questionVoPage);
+
+        // 生成一个 key
+        String key = "bank_detail_" + id;
+        String lockKey = "lock:" + key;  // 互斥锁防止击穿，防止单个热点key失效，大量并发请求这个key
+//        // 如果是热key
+//        if (JdHotKeyStore.isHotKey(key)) {
+//            // 从本地缓存获取缓存值
+//            Object cacheQuestionBankVO = JdHotKeyStore.get(key);
+//            if (cacheQuestionBankVO != null) {
+//                // 如果本地缓存已经有值。直接返回查询的值
+//                System.out.println("命中热key缓存: " + key);
+//                return ResultUtils.success((QuestionBankVO) cacheQuestionBankVO);
+//
+//            } else {
+//                // 这里可以添加等待或重试逻辑，或者直接走数据库
+//                System.out.println("热key识别但缓存为空，可能存在推送延迟: " + key);
+//                // 继续执行数据库查询
+//            }
+//        }
+//        //查询redis，使用hotkey获取redis 的分布式缓存，先redis，再数据库
+//
+//
+//
+//        // 查询数据库
+//        QuestionBank questionBank = questionBankService.getById(id);
+//        ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
+//        //查询题库封装类
+//        QuestionBankVO questionBankV0 = questionBankService.getQuestionBankVO(questionBank, request);
+//        //是否要关联查询题库下的题目列表
+//        boolean needQuestionQueryList = questionbankqueryrequest.isNeedQueryQuestionList();
+//        if (needQuestionQueryList) {
+//            QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
+//            questionQueryRequest.setQuestionBankId(id);
+//            //可以按需要支持更多的题目搜索参数，比如分页,
+//            questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
+//            questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
+//            Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
+//            Page<QuestionVO> questionVoPage = questionService.getQuestionVOPage(questionPage, request);
+//            questionBankV0.setQuestionPage(questionVoPage);
+//        }
+//        //设置本地缓存(如果不是热key，这个方法不会设置热key)
+//        JdHotKeyStore.smartSet(key, questionBankV0);
+//        // 获取封装类
+//        return ResultUtils.success(questionBankV0);
+
+        try {
+            // 判断是不是热key
+            if (JdHotKeyStore.isHotKey(key)) {
+                // 从本地缓存获取值
+                Object cacheBank = JdHotKeyStore.get(key);
+                if (cacheBank != null) {
+                    System.out.println("命中hotkey缓存");
+                    return ResultUtils.success(new QuestionBankVO());
+                }
+            }
+
+            // 使用redis 分布式缓存，查询
+            Object redisCache = redisTemplate.opsForValue().get(key);
+            if (redisCache != null) {
+                // 优化方案。判断是不是热 key ，是了回退到hotkey缓存
+                if (JdHotKeyStore.isHotKey(key)) {
+                    JdHotKeyStore.smartSet(key, redisCache);
+                }
+                return ResultUtils.success(new QuestionBankVO());
+            }
+
+            // 使用互斥锁
+            boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", 10, TimeUnit.SECONDS);
+            final int LOCK_WAIT_TIME = 20; // 20ms
+            final int MAX_RETRY_COUNT = 2; // 最多重试2次
+            if (!locked) {
+                // 如果没有拿到锁，可以先重试或者递归重新来
+                // 超过最大重试次数，降级处理
+                Thread.sleep(LOCK_WAIT_TIME);
+                return getQuestionBankVOById(questionbankqueryrequest, request);
+            }
+
+            // 双重缓存检查，防止等待锁加载期间，数据已经被别的线程获取了
+            try {
+
+
+                Object doubleCheck = redisTemplate.opsForValue().get(key);
+                if (doubleCheck != null) {
+                    return ResultUtils.success((QuestionBankVO) doubleCheck);
+                }
+                //查询数据库
+                System.out.println("🚀 线程 " + Thread.currentThread().getName() + " 获取到锁，查询数据库");
+                QuestionBank questionBank = questionBankService.getById(id);
+                ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
+                //查询题库封装类
+                QuestionBankVO questionBankVO = questionBankService.getQuestionBankVO(questionBank, request);
+                //是否要关联查询题库下的题目列表
+                boolean needQuestionQueryList = questionbankqueryrequest.isNeedQueryQuestionList();
+                if (needQuestionQueryList) {
+                    QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
+                    questionQueryRequest.setQuestionBankId(id);
+                    //可以按需要支持更多的题目搜索参数，比如分页,
+                    questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
+                    questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
+                    Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
+                    Page<QuestionVO> questionVoPage = questionService.getQuestionVOPage(questionPage, request);
+                    questionBankVO.setQuestionPage(questionVoPage);
+                }
+
+
+                // 设置多级缓存
+                // redis缓存 (随机过期时间)
+                long timeout = 30 * 60 + ThreadLocalRandom.current().nextInt(0, 300);
+                redisTemplate.opsForValue().set(key, questionBankVO, timeout, TimeUnit.SECONDS);
+
+                // hotkey 缓存
+                JdHotKeyStore.smartSet(key, questionBankVO);
+                System.out.println("✅ 数据加载完成并设置缓存");
+                return ResultUtils.success(questionBankVO);
+
+
+            } finally {
+                redisTemplate.delete(lockKey);
+            }
+
+
+        } catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("查询中断", e);
+
+        } catch (Exception e) {
+
+            // 降级策略,使用数据库查询
+            QuestionBank questionBank = questionBankService.getById(id);
+            ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
+            //查询题库封装类
+            QuestionBankVO questionBankV0 = questionBankService.getQuestionBankVO(questionBank, request);
+            //是否要关联查询题库下的题目列表
+            boolean needQuestionQueryList = questionbankqueryrequest.isNeedQueryQuestionList();
+            if (needQuestionQueryList) {
+                QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
+                questionQueryRequest.setQuestionBankId(id);
+                //可以按需要支持更多的题目搜索参数，比如分页,
+                questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
+                questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
+                Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
+                Page<QuestionVO> questionVoPage = questionService.getQuestionVOPage(questionPage, request);
+                questionBankV0.setQuestionPage(questionVoPage);
+            }
+
+            return ResultUtils.success(questionBankV0);
         }
-        // 获取封装类
-        return ResultUtils.success(questionBankV0);
+
+
     }
 
     /**
@@ -194,7 +332,7 @@ public class QuestionBankController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionBankVO>> listQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
-                                                               HttpServletRequest request) {
+                                                                       HttpServletRequest request) {
         long current = questionBankQueryRequest.getCurrent();
         long size = questionBankQueryRequest.getPageSize();
         // 限制爬虫
@@ -215,7 +353,7 @@ public class QuestionBankController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<QuestionBankVO>> listMyQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
-                                                                 HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         ThrowUtils.throwIf(questionBankQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
         User loginUser = userService.getLoginUser(request);

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
 import com.lora.mianshihou.common.DeleteRequest;
@@ -26,11 +27,16 @@ import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.*;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 题目接口
@@ -52,6 +58,8 @@ public class QuestionController {
 
     @Resource
     private QuestionBankQuestionService questionBankQuestionService;
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
 
     // region 增删改查
 
@@ -154,11 +162,122 @@ public class QuestionController {
     @GetMapping("/get/vo")
     public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
-        // 查询数据库
-        Question question = questionService.getById(id);
-        ThrowUtils.throwIf(question == null, ErrorCode.NOT_FOUND_ERROR);
-        // 获取封装类
-        return ResultUtils.success(questionService.getQuestionVO(question, request));
+
+//        //使用hotkey 作为热点的探测
+//        //生成一个key
+//        String key = "question_detail_" + id;
+//
+//        //如果是一个热 key
+//        if (JdHotKeyStore.isHotKey(key)) {
+//            //从缓存获取
+//            Object cacheQuestionVO = JdHotKeyStore.get(key);
+//            if (cacheQuestionVO != null) {
+//                //如果本地缓存已经有值，则直接返回
+//                System.out.println("命中热key缓存: " + key);
+//                 return ResultUtils.success((QuestionVO) cacheQuestionVO);
+//            } else {
+//                // 这里可以添加等待或重试逻辑，或者直接走数据库
+//                System.out.println("热key识别但缓存为空，可能存在推送延迟: " + key);
+//                // 继续执行数据库查询
+//            }
+//        }
+//
+//
+//        //可以多久缓存，防止redis或者出现雪崩，击穿等问题是，请求大量涌向数据库，先从本地缓存caffeine/借助 hotkey 缓存
+//        // 在下一步 之前通过hotkey 的检测将缓存存在redis 的分布式缓存，这一步，是为了防止redis 缓存失效，导致请求直接冲向数据库，
+//        // 这一步查询redis缓存，最后查询数据库
+//
+//
+//        // 查询数据库
+//        Question question = questionService.getById(id);
+//        ThrowUtils.throwIf(question == null, ErrorCode.NOT_FOUND_ERROR);
+//
+//        QuestionVO questionVO = questionService.getQuestionVO(question, request);
+//
+//        // 缓存到 hotkey 缓存中
+//        JdHotKeyStore.smartSet(key, questionVO);
+
+
+//        // 获取封装类
+//        return ResultUtils.success(questionVO);
+          // 分布式缓存架构
+        String key = "question_detail_" + id;
+        String lockKey = "lock:" + key;  // 互斥锁防止击穿，防止单个热点key失效，大量并发请求这个key
+        try {
+            // 热点hotkey 检测
+            //判断是不是热点key
+            if (JdHotKeyStore.isHotKey(key)) {
+                //获取本地缓存
+                Object cachequestion = JdHotKeyStore.get(key);
+                if (cachequestion != null) {
+                    System.out.println("命中hotkey缓存");
+                    return ResultUtils.success((QuestionVO) cachequestion);
+                }
+            }
+
+            // redis 检测
+            Object rediscache = redisTemplate.opsForValue().get(key);
+            if (rediscache != null) {
+                //如果是热key ，回填到hot key缓存
+                if (JdHotKeyStore.isHotKey(key)) {
+                    // 将redis缓存回填到hotkey缓存，实现优化
+                    JdHotKeyStore.smartSet(key, rediscache);
+                }
+                return ResultUtils.success((QuestionVO) rediscache);
+            }
+
+            // 获取分布式锁
+            boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", 10, TimeUnit.SECONDS);
+            if (!locked) {
+                //如果没有拿到所，说明有别的进程再拿数据，稍后等待重试，或者递归重试
+                Thread.sleep(50);
+                return getQuestionVOById(id, request);
+            }
+            //双重检查
+            // 在加锁后必须再次检查缓存
+            // 因为可能等待锁期间，数据已经被其他线程加载了
+            try {
+
+                Object doubleCheck = redisTemplate.opsForValue().get(key);
+                if (doubleCheck != null) {
+                    return ResultUtils.success((QuestionVO) doubleCheck);
+                }
+                //查询数据库
+                System.out.println("🚀 线程 " + Thread.currentThread().getName() + " 获取到锁，查询数据库");
+                Question question = questionService.getById(id);
+                ThrowUtils.throwIf(question == null, ErrorCode.NOT_FOUND_ERROR);
+                QuestionVO questionVO = questionService.getQuestionVO(question, request);
+
+                // 设置多级缓存
+                // redis缓存 (随机过期时间)
+                long timeout = 30 * 60 + ThreadLocalRandom.current().nextInt(0, 300);
+                redisTemplate.opsForValue().set(key, questionVO, timeout, TimeUnit.SECONDS);
+
+                // hotkey 缓存
+                JdHotKeyStore.smartSet(key, questionVO);
+                System.out.println("✅ 数据加载完成并设置缓存");
+                return ResultUtils.success(questionVO);
+            } finally {
+                // 释放锁，互斥锁，防止别的进程一直等待上一个进程的获取数据，导致系统堵塞，
+                redisTemplate.delete(lockKey);
+            }
+
+
+        } catch (InterruptedException e) {
+
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("查询中断", e);
+
+
+        } catch (Exception e) {
+
+            //保底策略，查询数据库
+
+            System.err.println("缓存系统异常，降级查询: " + e.getMessage());
+            Question question = questionService.getById(id);
+            ThrowUtils.throwIf(question == null, ErrorCode.NOT_FOUND_ERROR);
+            return ResultUtils.success(questionService.getQuestionVO(question, request));
+        }
     }
 
     /**

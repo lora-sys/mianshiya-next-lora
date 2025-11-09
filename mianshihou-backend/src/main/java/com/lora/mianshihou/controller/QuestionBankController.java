@@ -1,5 +1,8 @@
 package com.lora.mianshihou.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.lora.mianshihou.annotation.AuthCheck;
@@ -17,9 +20,7 @@ import com.lora.mianshihou.model.dto.questionBank.QuestionBankQueryRequest;
 import com.lora.mianshihou.model.dto.questionBank.QuestionBankUpdateRequest;
 import com.lora.mianshihou.model.entity.Question;
 import com.lora.mianshihou.model.entity.QuestionBank;
-import com.lora.mianshihou.model.entity.QuestionBankQuestion;
 import com.lora.mianshihou.model.entity.User;
-import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
 import com.lora.mianshihou.model.vo.QuestionBankVO;
 import com.lora.mianshihou.model.vo.QuestionVO;
 import com.lora.mianshihou.service.QuestionBankService;
@@ -35,7 +36,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 /**
  * 题库接口
  *
@@ -149,12 +149,16 @@ public class QuestionBankController {
      * @return
      */
     @GetMapping("/get/vo")
-    public BaseResponse<QuestionBankVO> getQuestionBankVOById(QuestionBankQueryRequest questionbankqueryrequest, HttpServletRequest request) {
 
+    public BaseResponse<QuestionBankVO> getQuestionBankVOById(QuestionBankQueryRequest questionbankqueryrequest, HttpServletRequest request) {
+        //多级缓存架构：Hotkey(本地) → Redis(分布式) → Database
+        //防雪崩：Redis缓存设置随机过期时间
+        //防击穿：使用分布式锁保护数据库
+        //性能优先：热点数据优先从本地缓存返回
+        //自动回填：Redis中的数据自动回填到Hotkey
         ThrowUtils.throwIf(questionbankqueryrequest == null, ErrorCode.PARAMS_ERROR);
         Long id = questionbankqueryrequest.getId();
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
-
         // 生成一个 key
         String key = "bank_detail_" + id;
         String lockKey = "lock:" + key;  // 互斥锁防止击穿，防止单个热点key失效，大量并发请求这个key
@@ -174,9 +178,6 @@ public class QuestionBankController {
 //            }
 //        }
 //        //查询redis，使用hotkey获取redis 的分布式缓存，先redis，再数据库
-//
-//
-//
 //        // 查询数据库
 //        QuestionBank questionBank = questionBankService.getById(id);
 //        ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
@@ -331,6 +332,7 @@ public class QuestionBankController {
      * @return
      */
     @PostMapping("/list/page/vo")
+    @SentinelResource(value = "listQuestionBankVOByPage", blockHandler = "handleBlockException",fallback="handleFallback")
     public BaseResponse<Page<QuestionBankVO>> listQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
                                                                        HttpServletRequest request) {
         long current = questionBankQueryRequest.getCurrent();
@@ -343,6 +345,31 @@ public class QuestionBankController {
         // 获取封装类
         return ResultUtils.success(questionBankService.getQuestionBankVOPage(questionBankPage, request));
     }
+
+    /**
+     * listQuestionBankVOByPage 流控操作（此处为了方便演示，写在同一个类中）
+     * 限流：提示“系统压力过大，请耐心等待”
+     *
+     */
+    public BaseResponse<Page<QuestionBankVO>> handleBlockException(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
+                                                                   HttpServletRequest request, BlockException ex) {
+        // 降级操作
+        if (ex instanceof DegradeException) {
+            return handleFallback(questionBankQueryRequest, request, ex);
+        }
+        // 限流操作
+        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, "系统压力过大，请耐心等待");
+    }
+
+    /**
+     * listQuestionBankVOByPage 降级操作：直接返回本地数据（此处为了方便演示，写在同一个类中）
+     */
+    public BaseResponse<Page<QuestionBankVO>> handleFallback(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
+                                                             HttpServletRequest request, Throwable ex) {
+        // 可以返回本地数据或空数据
+        return ResultUtils.success(null);
+    }
+
 
     /**
      * 分页获取当前登录用户创建的题库列表

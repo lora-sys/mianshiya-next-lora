@@ -23,8 +23,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * @author lora
  *
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class AuthInterceptor {
 
     @Resource

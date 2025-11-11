@@ -1,5 +1,6 @@
 package com.lora.mianshihou.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -113,7 +114,7 @@ public class QuestionBank_QuestionController {
      * @return
      */
     @PostMapping("/update")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateQuestionBank_Question(@RequestBody QuestionBankQuestionUpdateRequest questionBank_questionUpdateRequest) {
         if (questionBank_questionUpdateRequest == null || questionBank_questionUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -156,7 +157,7 @@ public class QuestionBank_QuestionController {
      * @return
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+@SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<QuestionBankQuestion>> listQuestionBank_QuestionByPage(@RequestBody QuestionBankQuestionQueryRequest questionBank_questionQueryRequest) {
         long current = questionBank_questionQueryRequest.getCurrent();
         long size = questionBank_questionQueryRequest.getPageSize();
@@ -242,7 +243,7 @@ public class QuestionBank_QuestionController {
      *
      */
     @PostMapping("/add/batch")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+@SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> batchAddQuestionToBank
     (
             @RequestBody QuestionBankBatchAddQuestionRequest questionBankBatchAddQuestionRequest,
@@ -264,7 +265,7 @@ public class QuestionBank_QuestionController {
      *
      */
     @PostMapping("/remove/batch")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+@SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> batchRemoveQuestionToBank
     (
             @RequestBody QuestionBankBatchRemoveQuestionRequest questionBankBatchRemoveQuestionRequest,

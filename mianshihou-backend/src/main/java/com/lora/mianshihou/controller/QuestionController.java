@@ -26,6 +26,7 @@ import com.lora.mianshihou.model.vo.QuestionVO;
 import com.lora.mianshihou.service.QuestionBankQuestionService;
 import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
+import com.lora.mianshihou.utils.crawlerDetect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class QuestionController {
     private QuestionBankQuestionService questionBankQuestionService;
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    private crawlerDetect crawlerDetect;
 
     // region 增删改查
 
@@ -162,7 +165,21 @@ public class QuestionController {
     @GetMapping("/get/vo")
     public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
+          // 进行反爬虫校验，此处可是检查登录状态设置观看权限
+        // 检查用户是否登录
+        User loginUser = userService.getLoginUserPermitNull(request);
 
+        if(loginUser == null) {
+            Question question = questionService.getById(id);
+            ThrowUtils.throwIf(question == null, ErrorCode.NOT_LOGIN_ERROR);
+            QuestionVO questionVO = questionService.getQuestionVO(question, request);
+            questionVO.setAnswer("未登录,没有观看权限");
+            return ResultUtils.success(questionVO);
+
+        }
+        if(loginUser!=null) {
+            crawlerDetect.crawlerCounterDetect(loginUser.getId());
+        }
 //        //使用hotkey 作为热点的探测
 //        //生成一个key
 //        String key = "question_detail_" + id;

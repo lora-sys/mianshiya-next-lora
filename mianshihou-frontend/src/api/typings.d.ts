@@ -54,14 +54,12 @@ declare namespace API {
   };
 
   type BaseResponsePageQuestionBankQuestionVO_ = {
-    records: never[];
     code?: number;
     data?: PageQuestionBankQuestionVO_;
     message?: string;
   };
 
   type BaseResponsePageQuestionBankVO_ = {
-    records: never[];
     code?: number;
     data?: PageQuestionBankVO_;
     message?: string;
@@ -192,6 +190,7 @@ declare namespace API {
   type LoginUserVO = {
     createTime?: string;
     id?: number;
+    token?: string;
     updateTime?: string;
     userAvatar?: string;
     userName?: string;
@@ -469,6 +468,7 @@ declare namespace API {
   type QuestionBankQuestion = {
     createTime?: string;
     id?: number;
+    isDelete?: number;
     questionBankId?: number;
     questionId?: number;
     updateTime?: string;

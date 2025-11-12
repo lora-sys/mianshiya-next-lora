@@ -1,5 +1,6 @@
 package com.lora.mianshihou.job.cycle;
 
+import com.lora.mianshihou.annotation.DistributedLock;
 import com.lora.mianshihou.esdao.PostEsDao;
 import com.lora.mianshihou.mapper.PostMapper;
 import com.lora.mianshihou.model.dto.post.PostEsDTO;
@@ -33,6 +34,7 @@ public class IncSyncPostToEs {
      * 每分钟执行一次
      */
     @Scheduled(fixedRate = 60 * 1000)
+    @DistributedLock(key="sync:question:toEs",leaseTime = 50000)
     public void run() {
         // 查询近 5 分钟内的数据
         Date fiveMinutesAgoDate = new Date(new Date().getTime() - 5 * 60 * 1000L);

@@ -2,6 +2,7 @@ package com.lora.mianshihou.utils;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.lora.mianshihou.annotation.DistributedLock;
 import com.lora.mianshihou.common.ErrorCode;
 import com.lora.mianshihou.exception.BusinessException;
 import com.lora.mianshihou.manager.CounterMessager;
@@ -21,7 +22,7 @@ public class crawlerDetect {
     private CounterMessager counterMessager;
     @Resource
     private UserService userService;
-
+    @DistributedLock(key = "crawler:detect:#loginUserId", leaseTime = 5000)
     public void crawlerCounterDetect(long loginUserId) {
         //调用多少次告警告
         final int WARN_COUNT=10;

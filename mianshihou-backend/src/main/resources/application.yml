@@ -99,6 +99,20 @@ spring:
     port: 6379
     timeout: 5000
     #    password: 123456
+#    何启用本地聚合（建议先按环境评估打开）：
+#
+#    - 在你的配置文件（application.yml 或 application.properties）中添加或覆盖：
+#        - application.properties:
+#        - counter.aggregate.enabled=true
+#        - counter.aggregate.flush-interval-ms=1000
+#        - counter.aggregate.max-buckets=10000
+#        - 或 application.yml:
+#            - counter:
+#                - aggregate:
+#                    - enabled: true
+#                    - flush-interval-ms: 1000
+#                    - max-buckets: 10000
+#    - 重启服务后，日志会打印“本地聚合已启用”的提示
     # Elasticsearch 配置
     #todo 需替换配置，然后取消注释
   elasticsearch:

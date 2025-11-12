@@ -1,5 +1,6 @@
 package com.lora.mianshihou.service;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,29 +12,33 @@ import com.lora.mianshihou.model.vo.QuestionBankQuestionVO;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
-* @author yanBingZhao
-* @description 针对表【question_bank_question(题库题目)】的数据库操作Service
-* @createDate 2025-10-18 15:44:00
-*/
+ * @author yanBingZhao
+ * @description 针对表【question_bank_question(题库题目)】的数据库操作Service
+ * @createDate 2025-10-18 15:44:00
+ */
 public interface QuestionBankQuestionService extends IService<QuestionBankQuestion> {
     /**
      * 校验数据
      *
      * @param questionBank_question
-     * @param add 对创建的数据进行校验
+     * @param add                   对创建的数据进行校验
      */
     void validQuestionBank_Question(QuestionBankQuestion questionBank_question, boolean add);
+
     /**
      * 获取查询条件
      *
      * @param questionBank_questionQueryRequest
-     *
      * @return
      */
     QueryWrapper<QuestionBankQuestion> getQueryWrapper(QuestionBankQuestionQueryRequest questionBank_questionQueryRequest);
+
     /**
      * 获取题库题目关联封装
      *
@@ -42,6 +47,7 @@ public interface QuestionBankQuestionService extends IService<QuestionBankQuesti
      * @return
      */
     QuestionBankQuestionVO getQuestionBank_QuestionVO(QuestionBankQuestion questionBank_question, HttpServletRequest request);
+
     /**
      * 分页获取题库题目关联封装
      *
@@ -53,13 +59,16 @@ public interface QuestionBankQuestionService extends IService<QuestionBankQuesti
 
     /**
      * 批量添加题目到题库
+     *
      * @param questionIdList
      * @param questionBankId
      * @param loginUser
      */
     void batchAddQuestionToBank(List<Long> questionIdList, long questionBankId, User loginUser);
+
     /**
      * 批量移除题目到题库
+     *
      * @param questionIdList
      * @param questionBankId
      *
@@ -77,4 +86,9 @@ public interface QuestionBankQuestionService extends IService<QuestionBankQuesti
 
     @Transactional(rollbackFor = Exception.class)
     void batchRemoveQuestionFromToBankInner(List<Long> questionIds, long questionBankId);
+
+    @Transactional(rollbackFor = Exception.class)
+     void batchIncrementQuestionCounts(List<QuestionBankQuestion> items);
+    @Transactional(rollbackFor = Exception.class)
+    void batchDecrementQuestionCounts(List<QuestionBankQuestion> items);
 }

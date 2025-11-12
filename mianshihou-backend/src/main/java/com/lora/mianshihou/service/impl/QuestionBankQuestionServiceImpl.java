@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lora.mianshihou.annotation.DistributedLock;
 import com.lora.mianshihou.common.ErrorCode;
 import com.lora.mianshihou.constant.CommonConstant;
 import com.lora.mianshihou.exception.BusinessException;
@@ -329,9 +330,30 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @DistributedLock(key="sync:question:toEs",leaseTime = 30000)
     public void batchAddQuestionToBankInner(List<QuestionBankQuestion> questionBankQuestions) {
         try {
             boolean result = this.saveBatch(questionBankQuestions);
+//            // 添加更新题库内的题目总数
+//            if (!questionBankQuestions.isEmpty()) {
+//                Long questionBankId = questionBankQuestions.get(0).getQuestionBankId();
+//                int size = questionBankQuestions.size();
+//                if (questionBankId != null && size < 0) {
+//                    ThrowUtils.throwIf(questionBankId <= 0, ErrorCode.PARAMS_ERROR, "当前题库内题目数量小于0");
+//                }
+//               boolean ok= questionBankService.update()
+//                        .setSql("question_count=question_count+" + size)
+//                        .eq("id", questionBankId)
+//                        .update();
+//                // update 方法自动上锁
+//                ThrowUtils.throwIf(ok==false,ErrorCode.OPERATION_ERROR,"增加题库中题目数量失败");
+//
+//            }
+            // 调用批量更新题目总数的方法
+            if (result && CollUtil.isNotEmpty(questionBankQuestions)) {
+                batchIncrementQuestionCounts(questionBankQuestions);
+            }
+
             ThrowUtils.throwIf(!result, ErrorCode.PARAMS_ERROR, "向题库添加题目失败");
         } catch (DataIntegrityViolationException e) {
             log.error("数据库唯一键冲突或违反其他完整性约束, 错误信息: {},", e.getMessage());
@@ -434,14 +456,30 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
      * 批量删除题目到题库事务方法，仅供内部使用
      */
     @Transactional(rollbackFor = Exception.class)
+    @DistributedLock(key="sync:question:toEs",leaseTime = 30000)
     @Override
     public void batchRemoveQuestionFromToBankInner(List<Long> questionIds, long questionBankId) {
         try {
             LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
                     .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
                     .in(QuestionBankQuestion::getQuestionId, questionIds);
-
+            List<QuestionBankQuestion> existQuestionList = this.list(lambdaQueryWrapper);
             boolean result = this.remove(lambdaQueryWrapper);
+//            // 删除更新题库内的题目总数
+//            if (!questionIds.isEmpty()) {
+//              boolean ok=  questionBankService.update()
+//                        .setSql("question_count=question_count+" + questionIds.size())
+//                        .eq("id",questionBankId)
+//                        .update();
+//                  if(!ok){
+//                      ThrowUtils.throwIf(ok==false,ErrorCode.OPERATION_ERROR,"删除题库中题目数量失败");
+//                  }
+//            }
+            // 调用批量更新题目总数的方法
+            if (result && !CollUtil.isEmpty(existQuestionList)) {
+                batchDecrementQuestionCounts(existQuestionList);
+            }
+
             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "批量删除题目失败");
 
         } catch (DataIntegrityViolationException e) {
@@ -456,6 +494,71 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
         }
     }
 
+    /**
+     * 批量增加题库题目总数
+     *
+     * @param items 题库题目关联列表
+     */
+    @Override
+    public void batchIncrementQuestionCounts(List<QuestionBankQuestion> items) {
+        if (CollUtil.isEmpty(items)) {
+            return;
+        }
+        // 聚合每个题库的questionBankId的增量
+        Map<Long, Integer> counts = items.stream()
+                .collect(Collectors.groupingBy(
+                        QuestionBankQuestion::getQuestionBankId,
+                        Collectors.summingInt(e -> 1)
+                        //作用相当于 COUNT(*) —— 每个相同 questionBankId 的元素加 1
+                ));
+        // 逐个执行递增
+
+        counts.forEach((bankId, cnt) -> {
+            if (bankId != null && cnt != null && cnt > 0) {
+                boolean ok = questionBankService.update()
+                        .setSql("question_count=question_count+" + cnt)
+                        .eq("id", bankId)
+                        .update();
+                if (!ok) {
+                    ThrowUtils.throwIf(ok == false, ErrorCode.OPERATION_ERROR, "批量更新题库中题目总数");
+                }
+            }
+        });
+    }
+
+    /**
+     * 批量删除题库题目总数
+     *
+     * @param items 题库题目关联列表
+     */
+    @Override
+    public void batchDecrementQuestionCounts(List<QuestionBankQuestion> items) {
+        if (CollUtil.isEmpty(items)) {
+            return;
+        }
+        // 聚合每个题库的questionBankId的增量
+        Map<Long, Integer> counts = items.stream()
+                .collect(Collectors.groupingBy(
+                        QuestionBankQuestion::getQuestionBankId,
+                        Collectors.summingInt(e -> 1)
+                        //作用相当于 COUNT(*) —— 每个相同 questionBankId 的元素减 1
+                ));
+        // 逐个执行递增
+
+        counts.forEach((bankId, cnt) -> {
+            QuestionBank questionBank = questionBankService.getById(bankId);
+            if (bankId != null && questionBank.getQuestionCount()>cnt) {
+
+                boolean ok = questionBankService.update()
+                        .setSql("question_count=question_count-" + cnt)
+                        .eq("id", bankId)
+                        .update();
+                if (!ok) {
+                    ThrowUtils.throwIf(ok == false, ErrorCode.OPERATION_ERROR, "批量更新题库中题目总数");
+                }
+            }
+        });
+    }
 
 
 }

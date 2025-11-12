@@ -1,6 +1,7 @@
 package com.lora.mianshihou.job.cycle;
 
 import cn.hutool.core.collection.CollUtil;
+import com.lora.mianshihou.annotation.DistributedLock;
 import com.lora.mianshihou.esdao.QuestionEsDao;
 import com.lora.mianshihou.mapper.QuestionMapper;
 import com.lora.mianshihou.model.dto.question.QuestionEsDTO;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
 /**
  * 增量同步题目到 es
  *
- * @author <a href="https://github.com/lilora">程序员鱼皮</a>
- * @from <a href="https://lora.icu">编程导航知识星球</a>
+ * @author lora
+ *
  */
 // todo 取消注释开启任务
 @Component
@@ -35,6 +36,7 @@ public class IncSyncQuestionToEs {
      * 每分钟执行一次
      */
     @Scheduled(fixedRate = 60 * 1000)
+    @DistributedLock(key="sync:question:toEs",leaseTime = 50000)
     public void run() {
         // 查询近 5 分钟内的数据
         long FIVE_MINUTES = 5 * 60 * 1000L;

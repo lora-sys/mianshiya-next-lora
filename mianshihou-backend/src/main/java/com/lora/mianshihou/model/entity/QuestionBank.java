@@ -59,6 +59,13 @@ public class QuestionBank {
      * 是否删除
      */
     private Integer isDelete;
+
+    /**
+     * 题库内题目总数
+     */
+    private Integer questionCount;
+
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

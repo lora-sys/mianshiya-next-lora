@@ -1,10 +1,13 @@
 package com.lora.mianshihou.config;
 
 import com.jd.platform.hotkey.client.ClientStarter;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
  * 热 key 发现配置
@@ -49,5 +52,19 @@ public class HotKeyConfig {
                 .setEtcdServer(etcdServer)
                 .build();
         starter.startPipeline();
+    }
+    /**
+     * 提供SpEL表达式解析器
+     */
+    @Bean
+    public ExpressionParser expressionParser() {
+        return new SpelExpressionParser();
+    }
+    /**
+     * 提供JdHotKeyStore bean
+     */
+    @Bean
+    public JdHotKeyStore jdHotKeyStore() {
+        return new JdHotKeyStore();
     }
 }

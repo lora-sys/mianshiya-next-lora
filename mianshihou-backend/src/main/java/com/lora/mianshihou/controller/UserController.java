@@ -1,6 +1,7 @@
 package com.lora.mianshihou.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lora.mianshihou.annotation.AuthCheck;
 import com.lora.mianshihou.common.BaseResponse;
@@ -20,6 +21,7 @@ import com.lora.mianshihou.model.dto.user.UserUpdateRequest;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.LoginUserVO;
 import com.lora.mianshihou.model.vo.UserVO;
+import com.lora.mianshihou.service.LoginConflictService;
 import com.lora.mianshihou.service.UserService;
 
 import java.time.LocalDate;
@@ -35,6 +37,7 @@ import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,6 +60,8 @@ public class UserController {
 
     @Resource
     private WxOpenConfig wxOpenConfig;
+    @Autowired
+    private LoginConflictService loginConflictService;
 
     // region 登录相关
 
@@ -309,5 +314,16 @@ public class UserController {
 
        return ResultUtils.success(userSignInRecord);
      }
+
+
+     @PostMapping("/clearConflict")
+    public BaseResponse<Boolean> clearConflict() {
+        if(!StpUtil.isLogin()){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        Long userId = Long.parseLong(StpUtil.getLoginId().toString());
+        loginConflictService.clearLoginConflict(userId);
+        return  ResultUtils.success(true);
+       }
 
 }

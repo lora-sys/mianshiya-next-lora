@@ -206,3 +206,16 @@ cos:
     secretKey: xxx
     region: xxx
     bucket: xxx
+# 本地爬虫配置（降级用）
+crawler:
+  local-config:
+    enable-local-fallback: true  # 是否启用本地降级
+    crawler-rules:
+      max-requests-per-minute: 20
+      warning-threshold: 10
+      block-duration: 3600
+      enable-dfa: true
+      enable-bloom-filter: true
+      sensitive-words: "爬虫,抓取,采集,scrapy,crawler"
+      ip-whitelist: "127.0.0.1,localhost"
+      user-agent-blacklist: "python-requests,scrapy,bot,crawler"

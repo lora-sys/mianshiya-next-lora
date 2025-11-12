@@ -42,5 +42,10 @@ public class GlobalExceptionHandler {
         log.error("NotLoginException", e);
         return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "未登录");
     }
+    @ExceptionHandler(LoginConflictException.class)
+    public BaseResponse<?> loginConflictExceptionHandler(LoginConflictException e) {
+        log.error("LoginConflictException", e);
+        return ResultUtils.error(e.getCode(), e.getMessage());
+    }
 
 }

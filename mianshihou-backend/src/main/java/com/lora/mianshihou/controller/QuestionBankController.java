@@ -7,6 +7,7 @@ import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.lora.mianshihou.annotation.AuthCheck;
+import com.lora.mianshihou.annotation.MultiLevelCache;
 import com.lora.mianshihou.common.BaseResponse;
 import com.lora.mianshihou.common.DeleteRequest;
 import com.lora.mianshihou.common.ErrorCode;
@@ -148,9 +149,16 @@ public class QuestionBankController {
      *
      * @param questionbankqueryrequest
      * @return
+     * 热点key检测
+     * 本地缓存获取
+     * Redis缓存查询
+     * 分布式锁
+     * 双重检查
+     * 缓存回填
+     * 随机TTL设置
      */
     @GetMapping("/get/vo")
-
+  @MultiLevelCache(value="bank_detail",key="#id",expire = 1800,longExpire = 10)
     public BaseResponse<QuestionBankVO> getQuestionBankVOById(QuestionBankQueryRequest questionbankqueryrequest, HttpServletRequest request) {
         //多级缓存架构：Hotkey(本地) → Redis(分布式) → Database
         //防雪崩：Redis缓存设置随机过期时间
@@ -160,9 +168,6 @@ public class QuestionBankController {
         ThrowUtils.throwIf(questionbankqueryrequest == null, ErrorCode.PARAMS_ERROR);
         Long id = questionbankqueryrequest.getId();
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
-        // 生成一个 key
-        String key = "bank_detail_" + id;
-        String lockKey = "lock:" + key;  // 互斥锁防止击穿，防止单个热点key失效，大量并发请求这个key
 //        // 如果是热key
 //        if (JdHotKeyStore.isHotKey(key)) {
 //            // 从本地缓存获取缓存值
@@ -201,88 +206,7 @@ public class QuestionBankController {
 //        // 获取封装类
 //        return ResultUtils.success(questionBankV0);
 
-        try {
-            // 判断是不是热key
-            if (JdHotKeyStore.isHotKey(key)) {
-                // 从本地缓存获取值
-                Object cacheBank = JdHotKeyStore.get(key);
-                if (cacheBank != null) {
-                    System.out.println("命中hotkey缓存");
-                    return ResultUtils.success(new QuestionBankVO());
-                }
-            }
 
-            // 使用redis 分布式缓存，查询
-            Object redisCache = redisTemplate.opsForValue().get(key);
-            if (redisCache != null) {
-                // 优化方案。判断是不是热 key ，是了回退到hotkey缓存
-                if (JdHotKeyStore.isHotKey(key)) {
-                    JdHotKeyStore.smartSet(key, redisCache);
-                }
-                return ResultUtils.success(new QuestionBankVO());
-            }
-
-            // 使用互斥锁
-            boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, "1", 10, TimeUnit.SECONDS);
-            final int LOCK_WAIT_TIME = 20; // 20ms
-            final int MAX_RETRY_COUNT = 2; // 最多重试2次
-            if (!locked) {
-                // 如果没有拿到锁，可以先重试或者递归重新来
-                // 超过最大重试次数，降级处理
-                Thread.sleep(LOCK_WAIT_TIME);
-                return getQuestionBankVOById(questionbankqueryrequest, request);
-            }
-
-            // 双重缓存检查，防止等待锁加载期间，数据已经被别的线程获取了
-            try {
-
-
-                Object doubleCheck = redisTemplate.opsForValue().get(key);
-                if (doubleCheck != null) {
-                    return ResultUtils.success((QuestionBankVO) doubleCheck);
-                }
-                //查询数据库
-                System.out.println("🚀 线程 " + Thread.currentThread().getName() + " 获取到锁，查询数据库");
-                QuestionBank questionBank = questionBankService.getById(id);
-                ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
-                //查询题库封装类
-                QuestionBankVO questionBankVO = questionBankService.getQuestionBankVO(questionBank, request);
-                //是否要关联查询题库下的题目列表
-                boolean needQuestionQueryList = questionbankqueryrequest.isNeedQueryQuestionList();
-                if (needQuestionQueryList) {
-                    QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
-                    questionQueryRequest.setQuestionBankId(id);
-                    //可以按需要支持更多的题目搜索参数，比如分页,
-                    questionQueryRequest.setPageSize(questionbankqueryrequest.getPageSize());
-                    questionQueryRequest.setCurrent(questionbankqueryrequest.getCurrent());
-                    Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-                    Page<QuestionVO> questionVoPage = questionService.getQuestionVOPage(questionPage, request);
-                    questionBankVO.setQuestionPage(questionVoPage);
-                }
-
-
-                // 设置多级缓存
-                // redis缓存 (随机过期时间)
-                long timeout = 30 * 60 + ThreadLocalRandom.current().nextInt(0, 300);
-                redisTemplate.opsForValue().set(key, questionBankVO, timeout, TimeUnit.SECONDS);
-
-                // hotkey 缓存
-                JdHotKeyStore.smartSet(key, questionBankVO);
-                System.out.println("✅ 数据加载完成并设置缓存");
-                return ResultUtils.success(questionBankVO);
-
-
-            } finally {
-                redisTemplate.delete(lockKey);
-            }
-
-
-        } catch (InterruptedException e) {
-
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("查询中断", e);
-
-        } catch (Exception e) {
 
             // 降级策略,使用数据库查询
             QuestionBank questionBank = questionBankService.getById(id);
@@ -303,7 +227,7 @@ public class QuestionBankController {
             }
 
             return ResultUtils.success(questionBankV0);
-        }
+
 
 
     }

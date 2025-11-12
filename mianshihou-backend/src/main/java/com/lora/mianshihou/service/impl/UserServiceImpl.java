@@ -15,6 +15,7 @@ import com.lora.mianshihou.model.enums.UserRoleEnum;
 import com.lora.mianshihou.model.vo.LoginUserVO;
 import com.lora.mianshihou.model.vo.UserVO;
 import com.lora.mianshihou.satoken.DeviceUtils;
+import com.lora.mianshihou.service.LoginConflictService;
 import com.lora.mianshihou.service.UserService;
 import com.lora.mianshihou.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBitSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -54,6 +56,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 盐值，混淆密码
      */
     private static final String SALT = "lora";
+    @Autowired
+    private LoginConflictService loginConflictService;
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -121,6 +125,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        request.getSession().setAttribute(USER_LOGIN_STATE, user);
         //使用sa-token登录,并指定设备，避免同端互斥
         StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
+        String device = DeviceUtils.getRequestDevice(request);
+        String tokenValue = StpUtil.getTokenValue();
+        loginConflictService.recordUserDevice(user.getId(), device, tokenValue);
         StpUtil.getSession().set(USER_LOGIN_STATE, user);
         return this.getLoginUserVO(user);
     }
@@ -155,6 +162,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //            request.getSession().setAttribute(USER_LOGIN_STATE, user);
             StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
             StpUtil.getSession().set(USER_LOGIN_STATE, user);
+            String device = DeviceUtils.getRequestDevice(request);
+            String tokenValue = StpUtil.getTokenValue();
+            loginConflictService.recordUserDevice(user.getId(), device, tokenValue);
             return getLoginUserVO(user);
         }
     }

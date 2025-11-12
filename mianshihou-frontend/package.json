@@ -29,6 +29,7 @@
     "react-dom": "^18",
     "react-redux": "^9.2.0",
     "save-dev": "0.0.1-security",
+    "swr": "^2.3.6",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {

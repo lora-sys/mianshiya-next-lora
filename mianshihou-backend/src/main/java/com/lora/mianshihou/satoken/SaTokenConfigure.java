@@ -4,7 +4,9 @@ import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
 import com.lora.mianshihou.constant.UserConstant;
 import com.lora.mianshihou.exception.BusinessException;
+import com.lora.mianshihou.exception.LoginConflictException;
 import com.lora.mianshihou.model.entity.User;
+import com.lora.mianshihou.service.LoginConflictService;
 import com.lora.mianshihou.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Resource
     private UserService userService;
 
+    @Resource
+    private LoginConflictService loginConflictService;
+
     // 注册 Sa-Token 拦截器，打开注解式鉴权功能
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -34,10 +39,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
             // 获取请求信息
             String requestPath = null;
             String clientIp = "unknown";
-
+            ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpServletRequest request = requestAttributes.getRequest();
             try {
-                ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-                HttpServletRequest request = requestAttributes.getRequest();
                 requestPath = request.getRequestURI();
                 clientIp = getClientIp(request);
             } catch (Exception e) {
@@ -84,6 +88,35 @@ public class SaTokenConfigure implements WebMvcConfigurer {
 
                     throw new BusinessException(403, "账号已被封禁，禁止访问");
                 }
+
+                if (request != null) {
+                    // 检查登录冲突状态
+                    try {
+                        // 获取当前token
+                        String tokenValue = StpUtil.getTokenValue();
+                        // 获取设备信息
+                        String device = DeviceUtils.getRequestDevice(request);
+
+                        // 检查是否处于登录冲突状态
+                        if (loginConflictService.isInConflictState(Long.parseLong(loginId.toString()), tokenValue)) {
+                            log.warn("用户登录冲突: userId={}, device={}, path={}, ip={}",
+                                    loginId, device, requestPath, clientIp);
+
+                            throw new LoginConflictException("您的账号在其他设备上登录，已被强制下线");
+                        }
+
+                        // 检查是否有新的登录冲突
+                        if (loginConflictService.checkLoginConflict(Long.parseLong(loginId.toString()), device, tokenValue)) {
+                            log.info("检测到新的登录冲突: userId={}, device={}, path={}, ip={}",
+                                    loginId, device, requestPath, clientIp);
+                        }
+                    } catch (LoginConflictException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        log.error("登录冲突检查异常: userId={}, path={}, error={}", loginId, requestPath, e.getMessage(), e);
+                    }
+                }
+
 
             } catch (BusinessException e) {
                 // 重新抛出业务异常

@@ -1,7 +1,7 @@
 import ReactECharts from "echarts-for-react";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { getUserSignInRecordUsingGet } from "@/api/userController";
+import { useUserSignInRecord } from "@/services/userServvice";
 
 interface Props {}
 /**
@@ -14,28 +14,38 @@ const CalendarChart = (props: Props) => {
   const [dataList, setDataList] = useState<number[]>([]);
   //计算图标所需要的数据
   const year = new Date().getFullYear();
-  //请求后端获取数据
 
-  const fetchDataList = async () => {
-    try {
-      const res = await getUserSignInRecordUsingGet(year);
-      setDataList(res.data as any);
-    } catch (e: any) {
-      // 在服务端渲染时，不能使用 message 组件
-      console.error("获取刷题记录失败，", e.message);
-    }
-  };
-  //保证只会调用一次
+  // 使用SWR获取数据
+  const { data: signInData, isLoading, error } = useUserSignInRecord(year);
+
+  // 当数据变化时更新本地状态
   useEffect(() => {
-    fetchDataList();
-  }, []);
+    // 修复1: 检查API返回的数据结构，从data字段中获取实际的签到记录数组
+    if (signInData && signInData.code === 0 && signInData.data) {
+      setDataList(signInData.data);
+    }
+  }, [signInData]);
+
+  // 处理错误
+  useEffect(() => {
+    // 修复2: 增强错误处理，同时检查API返回的错误信息
+    if (error) {
+      console.error("获取刷题记录失败，", error);
+    } else if (signInData && signInData.code !== 0) {
+      console.error("API返回错误：", signInData.message);
+    }
+  }, [error, signInData]);
+
+  // 修复3: 添加空数据检查，避免在dataList为空时渲染图表
+  if (!dataList || dataList.length === 0) {
+    return <div>暂无刷题记录</div>;
+  }
 
   const optionsData = dataList.map((dayOfYear) => {
     //计算日期字符串
     const dateStr = dayjs(`${year}-01-01`)
       .add(dayOfYear - 1, "day")
       .format("YYYY-MM-DD");
-    console.log(dateStr);
     return [dateStr, 1];
   });
 
@@ -63,9 +73,15 @@ const CalendarChart = (props: Props) => {
       data: optionsData,
     },
   };
+
+  // 显示加载状态
+  if (isLoading) {
+    return <div>加载中...</div>;
+  }
+
   return (
     <div className="Calendar-chart">
-      return <ReactECharts option={option} style={{ height: 400 }} />;
+      <ReactECharts option={option} style={{ height: 400 }} />
     </div>
   );
 };

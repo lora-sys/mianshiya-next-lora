@@ -168,6 +168,14 @@
             <artifactId>sa-token-spring-boot-starter</artifactId>
             <version>1.39.0</version>
         </dependency>
+       <!-- 本地缓存-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <!-- 移除 version 标签，让 Spring Boot 父POM管理版本 -->
+        </dependency>
+
+
     </dependencies>
 
     <build>

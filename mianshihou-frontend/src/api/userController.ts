@@ -25,6 +25,14 @@ export async function addUserSignInUsingPost(options?: { [key: string]: any }) {
   });
 }
 
+/** clearConflict POST /api/user/clearConflict */
+export async function clearConflictUsingPost(options?: { [key: string]: any }) {
+  return request<API.BaseResponseBoolean_>("/api/user/clearConflict", {
+    method: "POST",
+    ...(options || {}),
+  });
+}
+
 /** deleteUser POST /api/user/delete */
 export async function deleteUserUsingPost(
   body: API.DeleteRequest,
@@ -66,8 +74,8 @@ export async function getLoginUserUsingGet(options?: { [key: string]: any }) {
 /** getUserSignInRecord GET /api/user/get/sign_in */
 export async function getUserSignInRecordUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: number,
-  options?: { [p: string]: any },
+  params: API.getUserSignInRecordUsingGETParams,
+  options?: { [key: string]: any }
 ) {
   return request<API.BaseResponseListInt_>("/api/user/get/sign_in", {
     method: "GET",

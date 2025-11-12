@@ -41,7 +41,6 @@ export async function uploadFileUsingPost(
       ...params,
     },
     data: formData,
-    requestType: "form",
     ...(options || {}),
   });
 }

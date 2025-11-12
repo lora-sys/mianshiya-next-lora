@@ -23,6 +23,7 @@ import com.lora.mianshihou.model.dto.question.*;
 import com.lora.mianshihou.model.entity.Question;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.QuestionVO;
+import com.lora.mianshihou.service.ElasticSearchService;
 import com.lora.mianshihou.service.QuestionBankQuestionService;
 import com.lora.mianshihou.service.QuestionService;
 import com.lora.mianshihou.service.UserService;
@@ -63,6 +64,9 @@ public class QuestionController {
     private RedisTemplate<Object, Object> redisTemplate;
     @Autowired
     private crawlerDetect crawlerDetect;
+
+    @Resource
+    private ElasticSearchService elasticSearchService;
 
     // region 增删改查
 
@@ -105,7 +109,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/delete")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -132,7 +136,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/update")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateQuestion(@RequestBody QuestionUpdateRequest questionUpdateRequest) {
         if (questionUpdateRequest == null || questionUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -165,11 +169,11 @@ public class QuestionController {
     @GetMapping("/get/vo")
     public BaseResponse<QuestionVO> getQuestionVOById(long id, HttpServletRequest request) {
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
-          // 进行反爬虫校验，此处可是检查登录状态设置观看权限
+        // 进行反爬虫校验，此处可是检查登录状态设置观看权限
         // 检查用户是否登录
         User loginUser = userService.getLoginUserPermitNull(request);
 
-        if(loginUser == null) {
+        if (loginUser == null) {
             Question question = questionService.getById(id);
             ThrowUtils.throwIf(question == null, ErrorCode.NOT_LOGIN_ERROR);
             QuestionVO questionVO = questionService.getQuestionVO(question, request);
@@ -177,7 +181,7 @@ public class QuestionController {
             return ResultUtils.success(questionVO);
 
         }
-        if(loginUser!=null) {
+        if (loginUser != null) {
             crawlerDetect.crawlerCounterDetect(loginUser.getId());
         }
 //        //使用hotkey 作为热点的探测
@@ -304,7 +308,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/list/page")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
@@ -443,7 +447,7 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/edit")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest, HttpServletRequest request) {
         if (questionEditRequest == null || questionEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -480,18 +484,36 @@ public class QuestionController {
         // 限制爬虫
         ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // todo 取消注释开启 ES（须先配置 ES）
-        // 查询 ES
-        Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
+        Page<Question> questionPage;
+        // 检查是否配置es,否则降级数据库查询
+        if (elasticSearchService.isElasticsearchAvailable()) {
+                log.info("使用ElasticSearch 进行搜索");
+            // 查询 ES
+           questionPage= questionService.searchFromEs(questionQueryRequest);
+
+        } else {
+            log.info("使用数据库进行降级进行搜索");
+            // 降级策略，使用数据库查询
+            questionPage = questionService.listQuestionByPage(questionQueryRequest);
+        }
+
+
         // 查询数据库（作为没有 ES 的降级方案）
 //        Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
 
     @PostMapping("/batch/delete")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> batchDeleteQuestion(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest) {
         ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
         questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
         return ResultUtils.success(true);
+    }
+    @GetMapping("/es/health")
+    public BaseResponse<String> checkElasticsearchHealth() {
+        boolean isAvailable = elasticSearchService.isElasticsearchAvailable();
+        String status = isAvailable ? "Elasticsearch is available" : "Elasticsearch is not available";
+        return ResultUtils.success(status);
     }
 }

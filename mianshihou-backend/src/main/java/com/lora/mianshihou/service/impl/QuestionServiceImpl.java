@@ -236,8 +236,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Long userId = questionQueryRequest.getUserId();
 
         //注意 es 的起始页面为0
-        Long current = questionQueryRequest.getCurrent() - 1;
-        Long pageSize = questionQueryRequest.getPageSize();
+        Long current = Math.max(0, questionQueryRequest.getCurrent() - 1);
+        Long pageSize = Math.max(1, questionQueryRequest.getPageSize());
         String sortField = questionQueryRequest.getSortField();
         String sortOrder = questionQueryRequest.getSortOrder();
         log.info("分页参数: page={}, size={}, sortField={}", current, pageSize, sortField);

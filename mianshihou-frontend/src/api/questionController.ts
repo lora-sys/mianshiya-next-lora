@@ -62,6 +62,16 @@ export async function editQuestionUsingPost(
   });
 }
 
+/** checkElasticsearchHealth GET /api/question/es/health */
+export async function checkElasticsearchHealthUsingGet(options?: {
+  [key: string]: any;
+}) {
+  return request<API.BaseResponseString_>("/api/question/es/health", {
+    method: "GET",
+    ...(options || {}),
+  });
+}
+
 /** getQuestionVOById GET /api/question/get/vo */
 export async function getQuestionVoByIdUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

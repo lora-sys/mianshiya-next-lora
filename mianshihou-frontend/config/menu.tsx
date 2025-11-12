@@ -1,5 +1,5 @@
 import { MenuDataItem } from "@ant-design/pro-layout";
-import { CrownOutlined } from "@ant-design/icons";
+import { CrownOutlined, FundOutlined } from "@ant-design/icons";
 import accessEnum from "@/app/access/accessEnum";
 
 // 菜单列表
@@ -15,6 +15,11 @@ export const menus = [
   {
     path: "/questions",
     name: "题目",
+  },
+  {
+    path: "/architecture",
+    name: "系统架构",
+    icon: <FundOutlined />,
   },
   {
     name: "面试猴",

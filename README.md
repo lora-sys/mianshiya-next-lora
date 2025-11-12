@@ -55,10 +55,173 @@
 - [ ] nacos 配置中心
 - [ ] 多角度项目优化： 性能，安全性，可用性
 # 四.核心架构图
-![核心架构图](images/core_architecture_20251016203000.png)
+
+## 4.1 系统整体架构
+
+```mermaid
+graph TB
+    subgraph "Client Layer" 
+        A["🎯 Web Browser"]
+        B["📱 Mobile App"]
+    end
+
+    subgraph "Frontend Layer" 
+        C["⚛️ Next.js/React"]
+        D["🎨 Ant Design UI"]
+        E["🔄 Redux Toolkit"]
+    end
+
+    subgraph "API Gateway Layer"
+        F["🔄 Reverse Proxy"]
+        G["⚖️ Load Balancer"]
+    end
+
+    subgraph "Backend Services"
+        H["⚙️ Spring Boot APIs"]
+        I["🔐 Authentication Service"]
+        J["📚 Question Management"]
+        K["👥 User Management"]
+        L["🔍 Search Service"]
+        M["📊 Analytics Service"]
+        N["🔒 Security Service"]
+    end
+
+    subgraph "Data Layer"
+        O["🗄️ MySQL Database"]
+        P["⚡ Redis Cache"]
+        Q["🔍 Elasticsearch"]
+        R["☁️ File Storage"]
+    end
+
+    subgraph "Infrastructure"
+        S["📋 Nacos Config"]
+        T["⏱️ Sentinel Control"]
+        U["🔥 Hotkey Detection"]
+        V["🔄 Redisson Tools"]
+    end
+
+    subgraph "DevOps Tools"
+        W["🐳 Docker"]
+        X["🔄 CI/CD"]
+    end
+
+    A --> C
+    B --> C
+    C --> F
+    D --> C
+    E --> C
+    F --> H
+    G --> F
+    H --> I
+    H --> J
+    H --> K
+    H --> L
+    H --> M
+    H --> N
+    I --> O
+    J --> O
+    K --> O
+    L --> Q
+    M --> O
+    N --> O
+    O --> P
+    P --> S
+    Q --> T
+    R --> O
+    S --> H
+    T --> H
+    U --> H
+    V --> H
+    W --> H
+    X --> W
+```
+
+## 4.2 微服务架构图
+
+```mermaid
+graph LR
+    subgraph "Frontend Services"
+        A["🌐 Web Portal"]
+        B["📱 Mobile App"]
+        C["🔧 Admin Panel"]
+    end
+
+    subgraph "API Gateway"
+        D["🔗 Gateway Service"]
+    end
+
+    subgraph "Core Services"
+        E["👤 User Service"]
+        F["📚 Question Service"]
+        G["📚 Question Bank Service"]
+        H["🔍 Search Service"]
+        I["📊 Analytics Service"]
+        J["⚙️ Config Service"]
+    end
+
+    subgraph "Shared Infrastructure"
+        K["🗄️ MySQL Cluster"]
+        L["⚡ Redis Cluster"]
+        M["🔍 Elasticsearch"]
+        N["☁️ Object Storage"]
+    end
+
+    A --> D
+    B --> D
+    C --> D
+    D --> E
+    D --> F
+    D --> G
+    D --> H
+    D --> I
+    D --> J
+    E --> K
+    E --> L
+    F --> K
+    F --> L
+    G --> K
+    G --> L
+    H --> M
+    I --> K
+    I --> L
+    J --> N
+    J --> K
+```
+
+## 4.3 技术栈架构
+
+### 🎨 前端技术栈
+- **框架**: Next.js + React
+- **UI库**: Ant Design
+- **状态管理**: Redux Toolkit
+- **富文本**: Bytemd
+- **图表**: ECharts for React
+- **可视化**: React Flow
+- **开发工具**: TypeScript, ESLint, Prettier
+
+### ⚙️ 后端技术栈
+- **框架**: Spring Boot 2.7.2
+- **语言**: Java 11
+- **数据库**: MySQL + MyBatis-Plus
+- **缓存**: Redis + Caffeine + Redisson
+- **搜索引擎**: Elasticsearch
+- **权限**: Sa-Token
+- **配置中心**: Nacos
+- **流量控制**: Sentinel
+- **连接池**: Druid
+- **监控文档**: Knife4j
+
+### 🚀 部署与运维
+- **容器化**: Docker
+- **分词检索**: Elasticsearch
+- **热点探测**: Hotkey
+- **微信集成**: WeChat SDK
+- **文件存储**: Tencent Cloud COS
+- **部署**: CI/CD Pipeline
 
 # 五.环境准备
 ## jdk 版本要求8，11，17
 ## 推荐11，caffeine要求11
 ## nodejs>18.8
+
 

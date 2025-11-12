@@ -9,6 +9,7 @@ import QuestionCard from "@/components/QuestionCard";
 import Link from "next/link";
 import { doubleRequest } from "@/libs/concurrentRequest";
 import { Metadata } from "next";
+import RelatedQuestions from "@/components/RelatedQuestions";
 
 // 本页面使用服务端渲染，禁用静态生成
 export const dynamic = "force-dynamic";
@@ -193,6 +194,10 @@ export default async function BankQuestionPage({ params }: any) {
         </Sider>
         <Content>
           <QuestionCard question={question} />
+          <RelatedQuestions
+            currentQuestionId={questionId}
+            tags={question.tagList}
+          />
         </Content>
       </Flex>
     </div>

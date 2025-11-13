@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
       sortField: "createTime",
       sortOrder: "descend",
     });
-    const questionBankList = res.data.records ?? [];
+    const questionBankList = res.data?.records && Array.isArray(res.data.records) ? res.data.records : [];
 
     // 获取前几个题库名称用于元数据
     const bankNames = questionBankList.slice(0, 3).map((bank: any) => bank.title).join(", ");
@@ -70,7 +70,7 @@ export default async function BanksPage() {
       sortField: "createTime",
       sortOrder: "descend",
     });
-    questionBankList = res.data.records ?? [];
+    questionBankList = res.data?.records && Array.isArray(res.data.records) ? res.data.records : [];
   } catch (e: any) {
     // 在服务端渲染时，不能使用 message 组件
     console.error("获取题库列表失败，", e.message);

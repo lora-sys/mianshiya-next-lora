@@ -134,7 +134,7 @@ const QuestionTablePage: React.FC<Props> = (props) => {
             }
 
             // 更新结果
-            const newData = result?.data?.records || result?.records || [];
+            const newData = (result?.data?.records && Array.isArray(result.data.records) ? result.data.records : []) || (result?.records && Array.isArray(result.records) ? result.records : []);
             const newTotal = result?.data?.total || result?.total || 0;
             // 更新状态
             setQuestionList(newData);

@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 全局异常处理器
  *
@@ -42,9 +44,10 @@ public class GlobalExceptionHandler {
         log.error("NotLoginException", e);
         return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "未登录");
     }
+    // 在现有的 GlobalExceptionHandler 中添加
     @ExceptionHandler(LoginConflictException.class)
-    public BaseResponse<?> loginConflictExceptionHandler(LoginConflictException e) {
-        log.error("LoginConflictException", e);
+    public BaseResponse<?> handleLoginConflictException(LoginConflictException e, HttpServletRequest request) {
+        log.warn("登录冲突异常: path={}, message={}", request.getRequestURI(), e.getMessage());
         return ResultUtils.error(e.getCode(), e.getMessage());
     }
 

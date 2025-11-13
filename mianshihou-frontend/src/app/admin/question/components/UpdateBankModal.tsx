@@ -49,13 +49,15 @@ const UpdateBankModal: React.FC<Props> = (props) => {
         }),
       ]);
       
-      const relatedBankIds = (questionBankQuestionRes.data?.records ?? [])
+      const qbqData: any = (questionBankQuestionRes as any)?.data;
+      const relatedBankIds = (qbqData?.records ?? [])
         .filter((item: any) => item.questionId?.toString() === questionId?.toString())
         .map((item: any) => item.questionBankId);
       console.log("题目关联的题库ID列表:", relatedBankIds);
       
       // 处理获取到的题库列表
-      setQuestionBankList(questionBankRes.data?.records ?? []);
+      const bankData: any = (questionBankRes as any)?.data;
+      setQuestionBankList(bankData?.records ?? []);
       
       // 设置表单值
       form.setFieldValue("questionBankIdList" as any, relatedBankIds);

@@ -82,10 +82,9 @@ const InitLayout: React.FC<
     if (
       !pathname.startsWith("/user/login") &&
       !pathname.startsWith("/user/register") &&
-      userData
+      userData?.data
     ) {
-      // 更新全局状态
-      dispatch(setLoginUser(userData));
+      dispatch(setLoginUser(userData.data));
     }
   }, [userData, dispatch, pathname]);
 

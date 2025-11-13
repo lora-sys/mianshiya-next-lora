@@ -63,6 +63,7 @@ public class QuestionBank {
     /**
      * 题库内题目总数
      */
+    @TableField("question_count")
     private Integer questionCount;
 
 

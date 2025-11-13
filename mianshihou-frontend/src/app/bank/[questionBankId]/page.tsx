@@ -95,8 +95,8 @@ export default async function BankPage({ params }: any) {
 
   //获取第一道题
   let firstQuestionId;
-  if (bank.questionPage?.records && bank.questionPage?.records.length>0) {
-    firstQuestionId = bank.questionPage.records[0].id;
+  if (bank.questionPage?.records && Array.isArray(bank.questionPage.records) && bank.questionPage.records.length > 0) {
+    firstQuestionId = bank.questionPage.records[0]?.id;
   }
   return (
     <div id="bankPage" className="max-width-content">

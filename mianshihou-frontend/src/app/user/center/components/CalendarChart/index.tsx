@@ -20,23 +20,18 @@ const CalendarChart = (props: Props) => {
 
   // 当数据变化时更新本地状态
   useEffect(() => {
-    // 修复1: 检查API返回的数据结构，从data字段中获取实际的签到记录数组
-    if (signInData && signInData.code === 0 && signInData.data) {
-      setDataList(signInData.data);
+    if (Array.isArray(signInData?.data)) {
+      setDataList(signInData.data as number[]);
     }
   }, [signInData]);
 
   // 处理错误
   useEffect(() => {
-    // 修复2: 增强错误处理，同时检查API返回的错误信息
     if (error) {
       console.error("获取刷题记录失败，", error);
-    } else if (signInData && signInData.code !== 0) {
-      console.error("API返回错误：", signInData.message);
     }
-  }, [error, signInData]);
+  }, [error]);
 
-  // 修复3: 添加空数据检查，避免在dataList为空时渲染图表
   if (!dataList || dataList.length === 0) {
     return <div>暂无刷题记录</div>;
   }

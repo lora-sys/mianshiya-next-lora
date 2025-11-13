@@ -17,11 +17,6 @@ export const menus = [
     name: "题目",
   },
   {
-    path: "/architecture",
-    name: "系统架构",
-    icon: <FundOutlined />,
-  },
-  {
     name: "面试猴",
     path: "https://mianshihou.com",
     target: "_blank",

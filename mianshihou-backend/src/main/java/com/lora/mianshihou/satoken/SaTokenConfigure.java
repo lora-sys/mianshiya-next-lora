@@ -90,31 +90,15 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 }
 
                 if (request != null) {
-                    // 检查登录冲突状态
-                    try {
-                        // 获取当前token
+                          // 检查登录冲突状态
+                        // ✅ 修复：只检查冲突状态，不做冲突检测 ，提升性能
                         String tokenValue = StpUtil.getTokenValue();
-                        // 获取设备信息
-                        String device = DeviceUtils.getRequestDevice(request);
-
-                        // 检查是否处于登录冲突状态
-                        if (loginConflictService.isInConflictState(Long.parseLong(loginId.toString()), tokenValue)) {
-                            log.warn("用户登录冲突: userId={}, device={}, path={}, ip={}",
-                                    loginId, device, requestPath, clientIp);
-
+                        if (tokenValue != null && loginConflictService.isInConflictState(Long.parseLong(loginId.toString()), tokenValue)) {
+                            log.warn("用户登录冲突: userId={}, token={}, path={}", loginId, tokenValue.substring(0, 8) + "***", requestPath);
+                            // 踢掉当前冲突的token
+                            StpUtil.kickoutByTokenValue(tokenValue);
                             throw new LoginConflictException("您的账号在其他设备上登录，已被强制下线");
                         }
-
-                        // 检查是否有新的登录冲突
-                        if (loginConflictService.checkLoginConflict(Long.parseLong(loginId.toString()), device, tokenValue)) {
-                            log.info("检测到新的登录冲突: userId={}, device={}, path={}, ip={}",
-                                    loginId, device, requestPath, clientIp);
-                        }
-                    } catch (LoginConflictException e) {
-                        throw e;
-                    } catch (Exception e) {
-                        log.error("登录冲突检查异常: userId={}, path={}, error={}", loginId, requestPath, e.getMessage(), e);
-                    }
                 }
 
 

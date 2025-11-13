@@ -4,19 +4,19 @@ import myAxios from './request';
 // SWR fetcher函数
 export const fetcher = async (url: string) => {
   const response = await myAxios.get(url);
-  return response.data;
+  return response;
 };
 
 // 带参数的fetcher
 export const fetcherWithParams = async ([url, params]: [string, any]) => {
   const response = await myAxios.get(url, { params });
-  return response.data;
+  return response;
 };
 
 // POST请求的fetcher
 export const poster = async ([url, data]: [string, any]) => {
   const response = await myAxios.post(url, data);
-  return response.data;
+  return response;
 };
 
 // 自定义SWR Hook

@@ -21,6 +21,7 @@ import com.lora.mianshihou.model.dto.user.UserUpdateRequest;
 import com.lora.mianshihou.model.entity.User;
 import com.lora.mianshihou.model.vo.LoginUserVO;
 import com.lora.mianshihou.model.vo.UserVO;
+import com.lora.mianshihou.satoken.DeviceUtils;
 import com.lora.mianshihou.service.LoginConflictService;
 import com.lora.mianshihou.service.UserService;
 
@@ -104,6 +105,20 @@ public class UserController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
+
+
+        // 登录成功后检测冲突状态
+        // 使用事务版本的冲突检测
+        Long userId = Long.parseLong(StpUtil.getLoginId().toString());
+        String tokenValue = StpUtil.getTokenValue();
+        boolean hasConflict = loginConflictService.checkLoginConflictWithTransaction(
+                userId, DeviceUtils.getRequestDevice(request), tokenValue);
+
+        if (hasConflict) {
+            log.info("登录成功，但检测到设备冲突");
+        }
+
+
         return ResultUtils.success(loginUserVO);
     }
 
@@ -140,7 +155,16 @@ public class UserController {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        if (!StpUtil.isLogin()) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "用户未登录");
+        }
+        Long userId = Long.parseLong(StpUtil.getLoginId().toString());
+        String tokenValue = StpUtil.getTokenValue();
+
+        // 使用事务版本的注销清理
+        loginConflictService.logoutWithTransaction(userId, tokenValue);
         boolean result = userService.userLogout(request);
+
         return ResultUtils.success(result);
     }
 
@@ -257,7 +281,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/list/page")
-@SaCheckRole(UserConstant.ADMIN_ROLE)
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest, HttpServletRequest request) {
         long current = userQueryRequest.getCurrent();
         long size = userQueryRequest.getPageSize();
@@ -308,22 +332,28 @@ public class UserController {
 
     @GetMapping("/get/sign_in")
     BaseResponse<List<Integer>> getUserSignInRecord(Integer year, HttpServletRequest request) {
-    //必须要登录才能获取
+        //必须要登录才能获取
         User loginUser = userService.getLoginUser(request);
         List<Integer> userSignInRecord = userService.getUserSignInRecord(loginUser.getId(), year);
 
-       return ResultUtils.success(userSignInRecord);
-     }
+        return ResultUtils.success(userSignInRecord);
+    }
 
 
-     @PostMapping("/clearConflict")
+    @PostMapping("/clearConflict")
     public BaseResponse<Boolean> clearConflict() {
-        if(!StpUtil.isLogin()){
+        if (!StpUtil.isLogin()) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
+
         Long userId = Long.parseLong(StpUtil.getLoginId().toString());
-        loginConflictService.clearLoginConflict(userId);
-        return  ResultUtils.success(true);
-       }
+        String tokenValue = StpUtil.getTokenValue();
+
+        // ✅ 修改：使用事务版本
+        loginConflictService.clearLoginConflictWithTransaction(userId, tokenValue);
+
+        log.info("用户{}清除登录冲突成功", userId);
+        return ResultUtils.success(true);
+    }
 
 }

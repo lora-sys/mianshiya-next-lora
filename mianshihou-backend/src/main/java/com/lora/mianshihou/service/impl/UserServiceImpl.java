@@ -124,10 +124,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 3. 记录用户的登录态
 //        request.getSession().setAttribute(USER_LOGIN_STATE, user);
         //使用sa-token登录,并指定设备，避免同端互斥
-        StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
         String device = DeviceUtils.getRequestDevice(request);
+        // 先踢掉该账号在相同设备上的登录
+        StpUtil.kickout(user.getId(), device);
+        StpUtil.login(user.getId(), device);
         String tokenValue = StpUtil.getTokenValue();
-        loginConflictService.recordUserDevice(user.getId(), device, tokenValue);
+
+        // ✅ 在这里使用事务版本
+        boolean hasConflict = loginConflictService.checkLoginConflictWithTransaction(
+                user.getId(), device, tokenValue);
+
+        if (hasConflict) {
+            log.info("用户{}登录成功，检测到设备冲突", user.getId());
+        }
         StpUtil.getSession().set(USER_LOGIN_STATE, user);
         return this.getLoginUserVO(user);
     }
@@ -162,9 +171,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //            request.getSession().setAttribute(USER_LOGIN_STATE, user);
             StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
             StpUtil.getSession().set(USER_LOGIN_STATE, user);
-            String device = DeviceUtils.getRequestDevice(request);
+            String device = "miniProgram"; // 微信小程序
             String tokenValue = StpUtil.getTokenValue();
-            loginConflictService.recordUserDevice(user.getId(), device, tokenValue);
+            loginConflictService.checkLoginConflictWithTransaction(
+                    user.getId(), device, tokenValue);
             return getLoginUserVO(user);
         }
     }
@@ -257,6 +267,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
 //        }
         StpUtil.checkLogin();
+        Long userId = Long.parseLong(StpUtil.getLoginId().toString());
+        String tokenValue = StpUtil.getTokenValue();
+        // ✅ 事务清理
+        loginConflictService.logoutWithTransaction(userId, tokenValue);
         // 移除登录态
         StpUtil.logout();
 //        request.getSession().removeAttribute(USER_LOGIN_STATE);

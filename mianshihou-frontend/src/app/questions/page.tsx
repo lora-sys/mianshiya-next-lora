@@ -1,7 +1,6 @@
 import Title from "antd/es/typography/Title";
 import "./index.css";
 import { listQuestionVoByPageUsingPost } from "@/api/questionController";
-import { message } from "antd";
 import QuestionTable from "@/components/QuestionTable";
 import { Metadata } from "next";
 
@@ -22,7 +21,7 @@ export async function generateMetadata({ searchParams }: any): Promise<Metadata>
       sortField: "createTime",
       sortOrder: "descend",
     });
-    const questionList = res.data.records ?? [];
+    const questionList = res.data?.records && Array.isArray(res.data.records) ? res.data.records : [];
     const total = res.data.total ?? 0;
 
     // 获取前几个题目名称用于元数据
@@ -104,11 +103,10 @@ export default async function QuestionsPage({ searchParams }: any) {
       sortField: "createTime",
       sortOrder: "descend",
     });
-    questionList = res.data.records ?? [];
+    questionList = res.data?.records && Array.isArray(res.data.records) ? res.data.records : [];
     total = res.data.total ?? 0;
   } catch (e: any) {
-    // 在服务端渲染时，不能使用 message 组件
-    message.error("获取题目列表失败，", e.message);
+    console.error("获取题目列表失败,", e?.message || e);
   }
 
   return (

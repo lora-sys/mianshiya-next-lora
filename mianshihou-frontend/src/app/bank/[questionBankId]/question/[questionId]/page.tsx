@@ -164,8 +164,8 @@ export default async function BankQuestionPage({ params }: any) {
 
   //获取第一道题
   let firstQuestionId;
-  if (bank.questionPage?.records && bank.questionPage?.records.length > 0) {
-    firstQuestionId = bank.questionPage.records[0].id;
+  if (bank.questionPage?.records && Array.isArray(bank.questionPage.records) && bank.questionPage.records.length > 0) {
+    firstQuestionId = bank.questionPage.records[0]?.id;
   }
 
   //题目菜单列表

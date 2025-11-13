@@ -38,6 +38,9 @@ const RelatedQuestions = (props: Props) => {
     setCurrentPage(page);
   };
 
+  const records = (data?.data?.records && Array.isArray(data.data.records)) ? data.data.records : [];
+  const total = data?.data?.total || 0;
+
   return (
     <Card className="related-questions" title={title}>
       {isLoading ? (
@@ -46,10 +49,10 @@ const RelatedQuestions = (props: Props) => {
         </div>
       ) : error ? (
         <Empty description="加载相关题目失败" />
-      ) : data?.data?.records?.length > 0 ? (
+      ) : records.length > 0 ? (
         <>
           <List
-            dataSource={data.data.records}
+            dataSource={records}
             renderItem={(item :any) => (
               <List.Item extra={<TagList tagList={item.tagList} />}>
                 <List.Item.Meta
@@ -63,11 +66,11 @@ const RelatedQuestions = (props: Props) => {
               </List.Item>
             )}
           />
-          {data.data.total > pageSize && (
+          {total > pageSize && (
             <div className="pagination-container">
               <Pagination
                 current={currentPage}
-                total={data.data.total}
+                total={total}
                 pageSize={pageSize}
                 onChange={handlePageChange}
                 showSizeChanger={false}

@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   try {
     // 并发获取最新题库和题目数据
-    const [questionBankRes, questionListRes] = await doubleRequest(
+    const [questionBankRes, questionListRes] = (await doubleRequest(
       listQuestionBankVoByPageUsingPost,
       {
         pageSize: 12,
@@ -32,10 +32,10 @@ export async function generateMetadata(): Promise<Metadata> {
         sortField: "createTime",
         sortOrder: "descend",
       }
-    );
+    )) as [any, any];
 
-    const questionBankList = questionBankRes?.data.records ?? [];
-    const questionList = questionListRes?.data.records ?? [];
+    const questionBankList = questionBankRes?.data?.records && Array.isArray(questionBankRes.data.records) ? questionBankRes.data.records : [];
+    const questionList = questionListRes?.data?.records && Array.isArray(questionListRes.data.records) ? questionListRes.data.records : [];
 
     // 获取最新的题库名称和题目名称用于元数据
     const latestBankNames = questionBankList.slice(0, 3).map((bank: any) => bank.title).join(", ");
@@ -149,7 +149,7 @@ export default async function HomePage() {
   //   // 在服务端渲染时，不能使用 message 组件
   //   console.error("获取题目和题库列表数据失败", e.message);
   // }
-  const [questionBankRes, questionListRes] = await doubleRequest(
+  const [questionBankRes, questionListRes] = (await doubleRequest(
     listQuestionBankVoByPageUsingPost,
     {
       pageSize: 12,
@@ -162,9 +162,9 @@ export default async function HomePage() {
       sortField: "createTime",
       sortOrder: "descend",
     },
-  );
-  questionList = questionListRes?.data.records ?? [];
-  questionBankList = questionBankRes?.data.records ?? [];
+  )) as [any, any];
+  questionList = questionListRes?.data?.records && Array.isArray(questionListRes.data.records) ? questionListRes.data.records : [];
+  questionBankList = questionBankRes?.data?.records && Array.isArray(questionBankRes.data.records) ? questionBankRes.data.records : [];
   return (
     <div id="homePage" className="max-width-content">
       <Flex justify="space-between" align="center">

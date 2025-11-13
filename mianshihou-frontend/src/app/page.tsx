@@ -13,8 +13,6 @@ console.log(" ssr on server  ", typeof window); // 判断此时是否是跑在�
 // 配置页面使用服务端渲染
 export const dynamic = "force-dynamic";
 
-
-
 //  动态生成页面元数据
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -31,20 +29,37 @@ export async function generateMetadata(): Promise<Metadata> {
         pageSize: 12,
         sortField: "createTime",
         sortOrder: "descend",
-      }
+      },
     )) as [any, any];
 
-    const questionBankList = questionBankRes?.data?.records && Array.isArray(questionBankRes.data.records) ? questionBankRes.data.records : [];
-    const questionList = questionListRes?.data?.records && Array.isArray(questionListRes.data.records) ? questionListRes.data.records : [];
+    const questionBankList =
+      questionBankRes?.data?.records &&
+      Array.isArray(questionBankRes.data.records)
+        ? questionBankRes.data.records
+        : [];
+    const questionList =
+      questionListRes?.data?.records &&
+      Array.isArray(questionListRes.data.records)
+        ? questionListRes.data.records
+        : [];
 
     // 获取最新的题库名称和题目名称用于元数据
-    const latestBankNames = questionBankList.slice(0, 3).map((bank: any) => bank.title).join(", ");
-    const latestQuestionTitles = questionList.slice(0, 3).map((question: any) => question.title).join(", ");
+    const latestBankNames = questionBankList
+      .slice(0, 3)
+      .map((bank: any) => bank.title)
+      .join(", ");
+    const latestQuestionTitles = questionList
+      .slice(0, 3)
+      .map((question: any) => question.title)
+      .join(", ");
 
     return {
       title: "面试刷题平台 - 提升面试技能",
       description: `海量面试题库，涵盖各类技术面试题目。最新题库：${latestBankNames}。最新题目：${latestQuestionTitles}`,
       keywords: "面试,刷题,技术面试,编程,算法,数据结构,前端,后端,全栈",
+      metadataBase: new URL(
+        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+      ),
       openGraph: {
         title: "面试刷题平台 - 提升面试技能",
         description: `海量面试题库，涵盖各类技术面试题目。最新题库：${latestBankNames}`,
@@ -52,6 +67,7 @@ export async function generateMetadata(): Promise<Metadata> {
         locale: "zh_CN",
         url: "https://mianshiya.com",
         siteName: "面试刷题平台",
+
         images: [
           {
             url: "/logo.png",
@@ -89,9 +105,6 @@ export async function generateMetadata(): Promise<Metadata> {
     };
   }
 }
-
-
-
 
 /**
  * 主页
@@ -163,8 +176,16 @@ export default async function HomePage() {
       sortOrder: "descend",
     },
   )) as [any, any];
-  questionList = questionListRes?.data?.records && Array.isArray(questionListRes.data.records) ? questionListRes.data.records : [];
-  questionBankList = questionBankRes?.data?.records && Array.isArray(questionBankRes.data.records) ? questionBankRes.data.records : [];
+  questionList =
+    questionListRes?.data?.records &&
+    Array.isArray(questionListRes.data.records)
+      ? questionListRes.data.records
+      : [];
+  questionBankList =
+    questionBankRes?.data?.records &&
+    Array.isArray(questionBankRes.data.records)
+      ? questionBankRes.data.records
+      : [];
   return (
     <div id="homePage" className="max-width-content">
       <Flex justify="space-between" align="center">

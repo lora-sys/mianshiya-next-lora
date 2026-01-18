@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 // 动态生成页面元数据
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   // 获取路由参数
-  const { questionBankId } = params;
+  const { questionBankId } = await params;
 
   try {
     // 获取题库详情数据
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
  */
 export default async function BankPage({ params }: any) {
   //获取url的查询参数
-  const { questionBankId } = params;
+  const { questionBankId } = await params;
   //题目列表和总数
   let bank = undefined;
 

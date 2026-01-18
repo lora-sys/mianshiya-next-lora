@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 // 动态生成页面元数据
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   // 获取路由参数
-  const { questionBankId, questionId } = params;
+  const { questionBankId, questionId } = await params;
 
   try {
     // 并发获取题库详情和题目详情

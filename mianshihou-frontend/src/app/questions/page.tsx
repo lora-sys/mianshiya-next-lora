@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // 动态生成页面元数据
 export async function generateMetadata({ searchParams }: any): Promise<Metadata> {
   // 获取搜索参数
-  const { q: searchText } = searchParams;
+  const { q: searchText } = await searchParams;
 
   try {
     // 获取题目列表数据
@@ -91,7 +91,7 @@ export async function generateMetadata({ searchParams }: any): Promise<Metadata>
  */
 export default async function QuestionsPage({ searchParams }: any) {
   //获取url的查询参数
-  const { q: searchText } = searchParams;
+  const { q: searchText } = await searchParams;
   //题目列表和总数
   let total = 0;
   let questionList = [];

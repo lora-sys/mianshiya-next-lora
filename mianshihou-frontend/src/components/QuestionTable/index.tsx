@@ -31,7 +31,7 @@ interface Props {
  * @constructor
  */
 const QuestionTablePage: React.FC<Props> = (props) => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(null);
   const { defaultQuestionList, defaultTotal, defaultSearchParams = {} } = props;
   const [questionList, setQuestionList] = useState<API.QuestionVO[]>(
     defaultQuestionList || [],

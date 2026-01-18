@@ -18,7 +18,7 @@ const QuestionBankAdminPage: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 是否显示更新窗口
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(null);
   // 当前题库点击的数据
   const [currentRow, setCurrentRow] = useState<API.QuestionBank>();
 

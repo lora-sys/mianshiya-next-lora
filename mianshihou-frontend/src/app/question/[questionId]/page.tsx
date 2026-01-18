@@ -21,7 +21,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function QuestionPage({ params }: any) {
   //获取url的查询参数
-  const { questionId } = params;
+  const { questionId } = await params;
   //题目列表和总数
 
   //获取题目详情
